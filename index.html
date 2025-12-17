@@ -1,0 +1,2871 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Akıllı CV Platformu · Tek Dosya</title>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --bg2:#0f172a;
+      --panel:#0b1220;
+      --card:#0f172a;
+      --paper:#ffffff;
+      --text:#e5e7eb;
+      --muted:#9ca3af;
+      --border:rgba(255,255,255,0.10);
+      --accent:#60a5fa;
+      --accent2:#22c55e;
+      --danger:#ef4444;
+      --shadow: 0 22px 50px rgba(0,0,0,.35);
+      --radius: 14px;
+      --font: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+    html[data-theme="light"]{
+      --bg:#f3f4f6;
+      --bg2:#ffffff;
+      --panel:#ffffff;
+      --card:#ffffff;
+      --paper:#ffffff;
+      --text:#0f172a;
+      --muted:#6b7280;
+      --border:rgba(15,23,42,0.12);
+      --accent:#2563eb;
+      --accent2:#16a34a;
+      --shadow: 0 18px 38px rgba(15,23,42,.12);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%; margin:0; font-family:var(--font); background:linear-gradient(160deg,var(--bg),var(--bg2)); color:var(--text);}
+    a{color:inherit}
+    button,input,select,textarea{font-family:inherit}
+    /* Shell */
+    .shell{min-height:100%; display:flex; flex-direction:column}
+    .topbar{
+      position:sticky; top:0; z-index:50;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px 14px; border-bottom:1px solid var(--border);
+      background:rgba(10,16,30,.78); backdrop-filter: blur(10px);
+    }
+    html[data-theme="light"] .topbar{background:rgba(255,255,255,.78)}
+    .brand{display:flex; align-items:center; gap:10px; min-width:0}
+    .logo{
+      width:34px; height:34px; border-radius:10px;
+      background:linear-gradient(135deg,var(--accent),#a78bfa);
+      box-shadow: 0 10px 26px rgba(96,165,250,.25);
+      display:grid; place-items:center; font-weight:800;
+    }
+    .brand .title{line-height:1.1; min-width:0}
+    .brand .title b{display:block; font-size:13px; letter-spacing:.02em}
+    .brand .title span{display:block; font-size:11px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:58vw}
+    .top-actions{display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end}
+    .btn{
+      border:1px solid var(--border);
+      background:transparent;
+      color:var(--text);
+      padding:8px 10px;
+      border-radius:999px;
+      font-size:12px;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      transition:transform .05s ease, background .15s ease, border-color .15s ease;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .btn:hover{background:rgba(255,255,255,.06)}
+    html[data-theme="light"] .btn:hover{background:rgba(15,23,42,.06)}
+    .btn:active{transform:translateY(1px)}
+    .btn.primary{background:linear-gradient(135deg,var(--accent),#8b5cf6); border-color:transparent}
+    .btn.primary:hover{filter:brightness(1.02)}
+    .btn.good{background:rgba(34,197,94,.15); border-color:rgba(34,197,94,.35)}
+    .btn.danger{background:rgba(239,68,68,.12); border-color:rgba(239,68,68,.35)}
+    .pill{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:7px 10px; border-radius:999px; border:1px solid var(--border);
+      background:rgba(255,255,255,.04);
+      font-size:12px; color:var(--muted);
+    }
+    html[data-theme="light"] .pill{background:rgba(15,23,42,.03)}
+    .seg{
+      display:inline-flex; border:1px solid var(--border); border-radius:999px; overflow:hidden;
+    }
+    .seg button{
+      border:0; background:transparent; color:var(--muted);
+      padding:7px 10px; font-size:12px; cursor:pointer;
+    }
+    .seg button.active{background:rgba(255,255,255,.08); color:var(--text); font-weight:700}
+    html[data-theme="light"] .seg button.active{background:rgba(15,23,42,.08)}
+    /* Layout */
+    .main{flex:1; display:grid; grid-template-columns: 1fr; gap:12px; padding:12px; max-width:1400px; margin:0 auto; width:100%}
+    @media(min-width:1100px){
+      .main{grid-template-columns: 420px 1fr}
+    }
+    /* Left panel */
+    .panel-wrap{
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      background:rgba(255,255,255,.03);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      min-height:420px;
+    }
+    html[data-theme="light"] .panel-wrap{background:rgba(255,255,255,.7)}
+    .panel-head{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px 12px;
+      border-bottom:1px solid var(--border);
+    }
+    .panel-head b{font-size:12px; letter-spacing:.12em; text-transform:uppercase}
+    .panel-tabs{
+      display:flex; flex-wrap:wrap; gap:6px;
+      padding:10px 12px;
+      border-bottom:1px solid var(--border);
+      background:rgba(255,255,255,.02);
+    }
+    .tab{
+      padding:7px 10px; border-radius:999px;
+      border:1px solid var(--border);
+      background:transparent; color:var(--text);
+      font-size:12px; cursor:pointer;
+    }
+    .tab.active{background:rgba(255,255,255,.10); border-color:rgba(255,255,255,.20); font-weight:700}
+    html[data-theme="light"] .tab.active{background:rgba(15,23,42,.08); border-color:rgba(15,23,42,.18)}
+    .panel-body{padding:12px; max-height:calc(100vh - 160px); overflow:auto}
+    .section{display:none}
+    .section.active{display:block}
+    .grid2{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
+    @media(max-width:520px){ .grid2{grid-template-columns:1fr} }
+    .field{margin-bottom:10px}
+    .field label{display:block; font-size:11px; color:var(--muted); margin-bottom:4px}
+    .field input,.field select,.field textarea{
+      width:100%;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      padding:10px 10px;
+      font-size:13px;
+      outline:none;
+    }
+    html[data-theme="light"] .field input, html[data-theme="light"] .field select, html[data-theme="light"] .field textarea{
+      background:#fff;
+    }
+    .field textarea{min-height:86px; resize:vertical}
+    .hint{font-size:11px; color:var(--muted); margin-top:4px}
+    .row{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+    .mini-btn{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:12px;
+      cursor:pointer;
+    }
+    html[data-theme="light"] .mini-btn{background:#fff}
+    .mini-btn:hover{background:rgba(255,255,255,.08)}
+    .hr{height:1px; background:var(--border); margin:12px 0}
+    .cardbox{
+      border:1px solid var(--border);
+      border-radius:14px;
+      background:rgba(255,255,255,.03);
+      padding:10px;
+      margin-bottom:10px;
+    }
+    html[data-theme="light"] .cardbox{background:rgba(15,23,42,.03)}
+    .cardbox-head{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px}
+    .cardbox-head b{font-size:12px}
+    .tiny{font-size:11px; color:var(--muted)}
+    /* Preview */
+    .preview-wrap{
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      background:rgba(255,255,255,.03);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      min-height:520px;
+    }
+    html[data-theme="light"] .preview-wrap{background:rgba(255,255,255,.7)}
+    .preview-head{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px 12px;
+      border-bottom:1px solid var(--border);
+    }
+    .preview-head .left{display:flex; align-items:center; gap:10px; min-width:0}
+    .preview-head .left b{font-size:12px; letter-spacing:.12em; text-transform:uppercase}
+    .preview-head .left span{font-size:11px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:52vw}
+    .preview-body{
+      padding:12px;
+      overflow:auto; 
+      flex:1;
+    }
+    /* A4 paper */
+    .paper{
+      width: 210mm;
+      max-width: 100%;
+      margin:0 auto;
+      background:var(--paper);
+      color:#0f172a;
+      border-radius:12px;
+      border:1px solid rgba(15,23,42,.12);
+      box-shadow: 0 18px 44px rgba(0,0,0,.15);
+      padding:18px;
+    }
+    .paper *{color:#0f172a}
+    .cv-topbar{
+      display:flex; justify-content:space-between; gap:14px; align-items:flex-start;
+      border-bottom:1px solid rgba(15,23,42,.10);
+      padding-bottom:10px; margin-bottom:12px;
+    }
+    .contact-lines{font-size:11px; color:#4b5563}
+    .contact-lines div{margin:2px 0; display:flex; flex-wrap:wrap; gap:10px}
+    .contact-lines span{display:inline-flex; gap:6px; align-items:center}
+    .qrbox{
+      width:64px; height:64px; border-radius:10px;
+      border:1px dashed rgba(15,23,42,.35);
+      display:grid; place-items:center;
+      overflow:hidden;
+      background:#fff;
+    }
+    .qrbox img{width:100%; height:100%; object-fit:cover}
+    .qr-cap{font-size:9px; color:#6b7280; max-width:190px; text-align:right; margin-top:4px}
+    .profile{
+      display:grid; grid-template-columns: 1.4fr 1fr; gap:14px; margin-bottom:12px;
+    }
+    @media(max-width:900px){ .profile{grid-template-columns:1fr} }
+    .cv-card{
+      border:1px solid rgba(15,23,42,.10);
+      border-radius:12px;
+      padding:12px;
+      background:#fff;
+    }
+    .p-head{display:flex; gap:12px; align-items:center}
+    .photo{
+      width:78px; height:104px; border-radius:14px;
+      background:#0f172a;
+      color:#fff;
+      display:grid; place-items:center;
+      font-weight:900;
+      overflow:hidden;
+      box-shadow: 0 12px 24px rgba(15,23,42,.12);
+    }
+    .photo img{width:100%; height:100%; object-fit:cover}
+    .name{font-size:18px; font-weight:800; letter-spacing:.01em}
+    .role{font-size:12px; color:#6b7280; margin-top:2px}
+    .chips{display:flex; flex-wrap:wrap; gap:6px; margin-top:10px}
+    .chip{
+      border:1px solid rgba(15,23,42,.10);
+      border-radius:999px;
+      padding:3px 8px;
+      font-size:10px;
+      background:#f9fafb;
+      color:#111827;
+      white-space:nowrap;
+    }
+    .highlight{
+      margin-top:10px;
+      display:flex; gap:8px; align-items:flex-start;
+      border:1px solid rgba(34,197,94,.28);
+      background:#ecfdf5;
+      color:#065f46;
+      border-radius:999px;
+      padding:6px 10px;
+      font-size:11px;
+    }
+    .mini-grid{display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:12px}
+    @media(max-width:560px){ .mini-grid{grid-template-columns:1fr} }
+    .mini-title{
+      font-size:10px; color:#6b7280; text-transform:uppercase; letter-spacing:.12em; font-weight:800;
+      margin-bottom:5px;
+      display:flex; align-items:center; gap:8px;
+    }
+    .mini-title:before{content:""; width:18px; height:1px; background:var(--accent); border-radius:999px}
+    .mini-list{margin:0; padding-left:16px; font-size:11px}
+    .mini-list li{margin-bottom:2px}
+    .sec-title{
+      margin:12px 0 6px;
+      font-size:11px; color:#6b7280;
+      text-transform:uppercase; letter-spacing:.16em; font-weight:900;
+      display:flex; gap:8px; align-items:center;
+    }
+    .sec-title:before{content:""; width:18px; height:1px; background:var(--accent); border-radius:999px}
+    .sec-body{font-size:11px}
+    .item{margin-bottom:8px}
+    .item b{font-size:11px}
+    .meta{font-size:10px; color:#6b7280; margin-top:2px}
+    .bul{margin:4px 0 0; padding-left:16px}
+    .bul li{margin-bottom:2px}
+    .footer{
+      border-top:1px solid rgba(15,23,42,.10);
+      margin-top:12px; padding-top:10px;
+      font-size:10px; color:#6b7280;
+    }
+    /* Modal A4 */
+    .modal{
+      position:fixed; inset:0; background:rgba(0,0,0,.55);
+      display:none; align-items:center; justify-content:center;
+      padding:18px; z-index:200;
+    }
+    .modal.open{display:flex}
+    .modal-box{
+      width:min(980px, 96vw);
+      max-height:92vh;
+      border-radius:16px;
+      border:1px solid var(--border);
+      background:rgba(10,16,30,.92);
+      backdrop-filter: blur(10px);
+      overflow:hidden;
+      box-shadow: var(--shadow);
+      display:flex; flex-direction:column;
+    }
+    html[data-theme="light"] .modal-box{background:rgba(255,255,255,.96)}
+    .modal-top{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px 12px;
+      border-bottom:1px solid var(--border);
+    }
+    .modal-top b{font-size:12px; letter-spacing:.12em; text-transform:uppercase}
+    .modal-body{padding:12px; overflow:auto}
+    /* Overlay for panel on mobile */
+    .overlay{
+      position:fixed; inset:0; background:rgba(0,0,0,.45);
+      display:none; z-index:80;
+    }
+    .overlay.open{display:block}
+    @media(min-width:1100px){ .overlay{display:none !important} }
+    .drawer{
+      position:fixed; top:0; left:0; bottom:0;
+      width:min(430px, 92vw);
+      background:linear-gradient(180deg, rgba(10,16,30,.98), rgba(10,16,30,.92));
+      border-right:1px solid var(--border);
+      box-shadow: 16px 0 40px rgba(0,0,0,.35);
+      transform: translateX(-105%);
+      transition: transform .2s ease;
+      z-index:120;
+      display:flex; flex-direction:column;
+    }
+    html[data-theme="light"] .drawer{background:rgba(255,255,255,.98)}
+    .drawer.open{transform:translateX(0)}
+    .drawer .panel-wrap{border:0; border-radius:0; box-shadow:none; background:transparent; min-height:100%}
+    @media(min-width:1100px){
+      .drawer{position:static; transform:none !important; width:auto; background:transparent; box-shadow:none; border-right:0; z-index:auto}
+      .drawer.open{transform:none}
+      .drawer .panel-wrap{border:1px solid var(--border); border-radius:var(--radius); box-shadow: var(--shadow); background:rgba(255,255,255,.03)}
+      html[data-theme="light"] .drawer .panel-wrap{background:rgba(255,255,255,.7)}
+    }
+    /* Toast */
+    .toast{
+      position:fixed; left:50%; bottom:14px; transform:translateX(-50%);
+      background:rgba(15,23,42,.92); color:#fff;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:999px;
+      padding:10px 12px;
+      font-size:12px;
+      z-index:500;
+      display:none;
+      max-width:92vw;
+      box-shadow: 0 18px 40px rgba(0,0,0,.25);
+    }
+    html[data-theme="light"] .toast{background:rgba(15,23,42,.92)}
+    /* Print */
+    @media print{
+      .topbar, .drawer, .overlay, .preview-head, .modal, .toast {display:none !important}
+      body{background:#fff}
+      .main{display:block; padding:0}
+      .preview-wrap{border:0; border-radius:0; box-shadow:none}
+      .preview-body{padding:0}
+      .paper{box-shadow:none; border-radius:0; border:0; width:210mm; max-width:210mm; margin:0}
+    }
+  
+
+/* ==== CareerOS Panel Scroll Fix (iOS Safari / small screens) ==== */
+:root{ --safe-bottom: env(safe-area-inset-bottom, 0px); }
+
+.drawer{
+  /* keep overlay drawer stable across mobile address bar changes */
+  height: 100dvh;
+  padding-bottom: var(--safe-bottom);
+}
+
+.panel-wrap{
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* critical: allow children to shrink for scrolling */
+}
+
+.panel-head, .panel-tabs{
+  flex: 0 0 auto;
+}
+
+.panel-body{
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none !important;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(var(--safe-bottom) + 88px); /* allow last fields to be reachable */
+}
+
+/* If the panel is used as a fixed desktop sidebar too, this prevents 'cut off' there as well */
+@media (min-width: 900px){
+  .panel-body{ padding-bottom: 32px; }
+}
+/* ==== End Fix ==== */
+
+
+
+/* === Patch Merkezi (Ek) === */
+#tabManage .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width: 980px){#tabManage .grid-2{grid-template-columns:1fr}}
+#tabManage .row{margin-top:10px}
+#tabManage .lbl{display:block;font-size:12px;opacity:.8;margin-bottom:6px}
+#tabManage .inp{width:100%;box-sizing:border-box}
+#tabManage .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+#tabManage .list{margin-top:10px;display:flex;flex-direction:column;gap:8px}
+#tabManage .item{border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px}
+#tabManage .item .top{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+#tabManage .pill{font-size:11px;padding:3px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.12);opacity:.85}
+#tabManage .logbox{max-height:220px;overflow:auto;border:1px dashed rgba(255,255,255,.14);border-radius:12px;padding:10px;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-size:12px;line-height:1.35}
+#tabManage textarea.inp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo">A</div>
+      <div class="title">
+        <b>Akıllı CV Platformu</b>
+        <span id="subTitle">AI Destekli CV Sistemi · (tam modüllü)</span>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="btn" id="btnOpenPanel">☰ Panel</button>
+      <button class="btn" id="btnA4">🗂 A4 Önizleme</button>
+      <button class="btn" id="btnPrint">🖨️ PDF/Yazdır</button>
+      <div class="seg" title="Tema">
+        <button id="tSystem" class="active" type="button">Sistem</button>
+        <button id="tLight" type="button">Açık</button>
+        <button id="tDark" type="button">Koyu</button>
+      </div>
+      <div class="seg" title="Cihaz">
+        <button id="dDesk" class="active" type="button">Masaüstü</button>
+        <button id="dMob" type="button">Mobil</button>
+      </div>
+      <button class="btn primary" id="btnAutoPilot">🤖 Otopilot</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="overlay"></div>
+
+  <div class="main" id="mainGrid">
+    <!-- Drawer / Left -->
+    <div class="drawer" id="drawer">
+      <div class="panel-wrap">
+        <div class="panel-head">
+          <b>Düzenleme Paneli</b>
+          <div class="row">
+            <span class="pill" id="statePill">Kaydedildi</span>
+            <button class="btn" id="btnClosePanel" title="Kapat">✕</button>
+          </div>
+        </div>
+
+        <div class="panel-tabs" id="tabs">
+          <button class="tab active" data-tab="tabStart">Başlat</button>
+          <button class="tab" data-tab="tabProfile">Profil</button>
+          <button class="tab" data-tab="tabContact">İletişim</button>
+          <button class="tab" data-tab="tabSeo">Çerçeve/SEO</button>
+          <button class="tab" data-tab="tabCards">Kartlar</button>
+          <button class="tab" data-tab="tabEdu">Eğitim</button>
+          <button class="tab" data-tab="tabExp">Deneyim</button>
+          <button class="tab" data-tab="tabCert">Sertifikalar</button>
+          <button class="tab" data-tab="tabRefs">Referans</button>
+          <button class="tab" data-tab="tabEssay">Essay</button>
+          <button class="tab" data-tab="tabAI">AI Stüdyo</button>
+          <button class="tab" data-tab="tabFeedback">Geri Bildirim</button>
+        
+          <button class="tab" data-tab="tabManage" title="Platform yönetimi ve patch merkezi">
+            ⚙️ Yönetim
+          </button>
+</div>
+
+        <div class="panel-body">
+
+          <!-- START / FLOW -->
+          <div class="section active" id="tabStart">
+            <div class="cardbox">
+              <div class="cardbox-head">
+                <b>Akıllı Akış</b>
+                <span class="tiny">Meslek → Uzmanlık → Bölümler</span>
+              </div>
+              <div class="grid2">
+                <div class="field">
+                  <label>Meslek seç</label>
+                  <select id="professionSelect"></select>
+                  <div class="hint">Listede yoksa "Diğer" seç ve mesleğini yaz.</div>
+                </div>
+                <div class="field">
+                  <label>Uzmanlık / Alan</label>
+                  <select id="specialtySelect"></select>
+                </div>
+              </div>
+              <div class="field">
+                <label>Mesleğim listede yok</label>
+                <input id="professionCustom" type="text" placeholder="Örn: Eğitim Teknoloğu / Akademik Koç / ..." />
+              </div>
+              <div class="field">
+                <label>Hedef kullanım</label>
+                <select id="goalSelect">
+                  <option value="job">İş Başvurusu (ATS uyum)</option>
+                  <option value="school">Okul/Kurum başvurusu</option>
+                  <option value="freelance">Serbest/Portfolyo</option>
+                  <option value="visa">Vize/Resmi</option>
+                </select>
+              </div>
+              <div class="row">
+                <button class="mini-btn" id="btnSmartSetup">⚡ Akıllı Kurulum</button>
+                <button class="mini-btn" id="btnSmartSeo">🔎 SEO öner</button>
+                <button class="mini-btn" id="btnSmartCert">🎓 Sertifika öner</button>
+              </div>
+              <div class="hint" id="startHint"></div>
+            </div>
+
+            <div class="cardbox">
+              <div class="cardbox-head">
+                <b>Görünürlük</b>
+                <span class="tiny">İsteğe bağlı bölümler</span>
+              </div>
+              <div class="row">
+                <label class="pill"><input id="showReferences" type="checkbox" checked> Referanslar</label>
+                <label class="pill"><input id="showEssay" type="checkbox" checked> Essay</label>
+                <label class="pill"><input id="showAiComment" type="checkbox" checked> AI Yorum</label>
+              </div>
+              <div class="hint">Not: Bu ayarlar önizlemede bölümleri aç/kapatır.</div>
+            </div>
+          </div>
+
+          <!-- PROFILE -->
+          <div class="section" id="tabProfile">
+            <div class="cardbox">
+              <div class="cardbox-head">
+                <b>Profil</b>
+                <span class="tiny">Fotoğraf + temel kimlik</span>
+              </div>
+              <div class="grid2">
+                <div class="field">
+                  <label>Ad Soyad</label>
+                  <input id="inName" type="text" placeholder="Örn: Zinnur Reşit"/>
+                </div>
+                <div class="field">
+                  <label>Başlık / Rol</label>
+                  <input id="inRole" type="text" placeholder="Örn: Sınıf Öğretmeni · IB PYP"/>
+                </div>
+              </div>
+              <div class="field">
+                <label>Kısa vurgulu cümle</label>
+                <input id="inHighlight" type="text" placeholder="Örn: Sorgulama temelli, öğrenci ajansını merkeze alan..."/>
+                <div class="row">
+                  <button class="mini-btn" id="aiHighlightBtn">🤖 AI ile yaz</button>
+                </div>
+              </div>
+              <div class="grid2">
+                <div class="field">
+                  <label>Profil fotoğrafı (PNG/JPG)</label>
+                  <input id="inPhoto" type="file" accept="image/*"/>
+                  <div class="hint">Dikey dikdörtgen · yumuşak köşe · hafif gölge</div>
+                </div>
+                <div class="field">
+                  <label>Fotoğrafı kaldır</label>
+                  <button class="mini-btn" id="btnClearPhoto">🧹 Temizle</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CONTACT -->
+          <div class="section" id="tabContact">
+            <div class="cardbox">
+              <div class="cardbox-head">
+                <b>İletişim</b>
+                <span class="tiny">Telefon/konum/LinkedIn + QR</span>
+              </div>
+
+              <div class="grid2">
+                <div class="field">
+                  <label>E-posta</label>
+                  <input id="inEmail" type="email" placeholder="ornek@mail.com"/>
+                </div>
+                <div class="field">
+                  <label>LinkedIn / Web</label>
+                  <input id="inLink" type="text" placeholder="linkedin.com/in/... veya site"/>
+                </div>
+              </div>
+
+              <div class="grid2">
+                <div class="field">
+                  <label>Ülke</label>
+                  <select id="countrySelect"></select>
+                  <div class="hint">Ülkeye göre telefon formatı otomatik önerilir.</div>
+                </div>
+                <div class="field">
+                  <label>Telefon</label>
+                  <input id="inPhone" type="tel" placeholder="+90 (5xx) xxx xx xx"/>
+                  <div class="hint" id="phoneHint">TR formatı: +90 (5xx) xxx xx xx</div>
+                </div>
+              </div>
+
+              <div class="grid2">
+                <div class="field">
+                  <label>Şehir</label>
+                  <select id="citySelect"></select>
+                  <div class="hint">İstanbul: Avrupa / Anadolu. Semt istersen manuel yaz.</div>
+                </div>
+                <div class="field">
+                  <label>Semt (opsiyonel)</label>
+                  <input id="inDistrict" type="text" placeholder="Örn: Kadıköy / Beşiktaş / ..."/>
+                </div>
+              </div>
+
+              <div class="hr"></div>
+
+              <div class="grid2">
+                <div class="field">
+                  <label>QR için URL</label>
+                  <input id="inQrUrl" type="text" placeholder="https://..."/>
+                  <div class="row">
+                    <button class="mini-btn" id="btnGenQr">🔳 QR oluştur</button>
+                    <button class="mini-btn" id="btnClearQr">🧹 QR temizle</button>
+                  </div>
+                  <div class="hint">URL girip QR üret veya aşağıdan görsel yükle.</div>
+                </div>
+                <div class="field">
+                  <label>QR Görsel yükle (PNG/JPG)</label>
+                  <input id="inQrImg" type="file" accept="image/*"/>
+                </div>
+              </div>
+
+              <div class="field">
+                <label>QR açıklama etiketi</label>
+                <input id="inQrLabel" type="text" placeholder="Online CV / Portfolyo"/>
+              </div>
+
+              <div class="hr"></div>
+
+              <div class="grid2">
+                <div class="field">
+                  <label>CV Son Güncelleme (Ay/Yıl)</label>
+                  <input id="inLastUpdate" type="text" placeholder="12/2025"/>
+                  <div class="row">
+                    <button class="mini-btn" id="btnSetNow">🗓️ Şimdi güncelle</button>
+                  </div>
+                </div>
+                <div class="field">
+                  <label>Beyan</label>
+                  <input id="inDeclaration" type="text" value="Bu CV’de yer alan bilgilerin doğru ve güncel olduğunu beyan ederim."/>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SEO -->
+          <div class="section" id="tabSeo">
+            <div class="cardbox">
+              <div class="cardbox-head">
+                <b>Çerçeveler</b>
+                <span class="tiny">Seçime göre AI öneriler hedeflenir</span>
+              </div>
+              <div class="row">
+                <label class="pill"><input id="fwPYP" type="checkbox" checked> PYP</label>
+                <label class="pill"><input id="fwUbD" type="checkbox"> UbD</label>
+                <label class="pill"><input id="fwSEL" type="checkbox"> SEL</label>
+                <label class="pill"><input id="fwSTEM" type="checkbox"> STEM</label>
+                <label class="pill"><input id="fwMEB" type="checkbox"> MEB</label>
+              </div>
+            </div>
+
+            <div class="cardbox">
+              <div class="cardbox-head">
+                <b>SEO / Anahtar Kavramlar</b>
+                <span class="tiny">Her satır 1 anahtar kelime</span>
+              </div>
+              <div class="field">
+                <label>Anahtar kelimeler</label>
+                <textarea id="inKeywords" placeholder="IB PYP&#10;inquiry-based learning&#10;öğrenci ajansı"></textarea>
+              </div>
+              <div class="row">
+                <button class="mini-btn" id="aiKeywordsBtn">🤖 AI ile öner</button>
+                <button class="mini-btn" id="btnApplyKeywords">✅ Chip’lere uygula</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- CARDS -->
+          <div class="section" id="tabCards">
+            <div class="cardbox">
+              <div class="cardbox-head">
+                <b>Kartlar</b>
+                <span class="tiny">Her kartta AI ile doldur</span>
+              </div>
+
+              <div class="cardbox">
+                <div class="cardbox-head">
+                  <b>Kart 1 · Uzmanlık</b>
+                  <div class="row">
+                    <label class="pill"><input id="c1Show" type="checkbox" checked> Göster</label>
+                    <button class="mini-btn" id="aiCard1">🤖 AI</button>
+                  </div>
+                </div>
+                <div class="field"><label>Başlık</label><input id="c1Title" type="text" value="Uzmanlık Alanları"/></div>
+                <div class="field"><label>Satırlar (her satır 1 madde)</label><textarea id="c1Lines">İlkokul 1–4 düzeyi
+Unit of inquiry planlama</textarea></div>
+              </div>
+
+              <div class="cardbox">
+                <div class="cardbox-head">
+                  <b>Kart 2 · Yaklaşım</b>
+                  <div class="row">
+                    <label class="pill"><input id="c2Show" type="checkbox" checked> Göster</label>
+                    <button class="mini-btn" id="aiCard2">🤖 AI</button>
+                  </div>
+                </div>
+                <div class="field"><label>Başlık</label><input id="c2Title" type="text" value="Eğitim Yaklaşımı"/></div>
+                <div class="field"><label>Satırlar</label><textarea id="c2Lines">Inquiry temelli öğrenme
+Öğrenci merkezli sınıf kültürü</textarea></div>
+              </div>
+
+              <div class="cardbox">
+                <div class="cardbox-head">
+                  <b>Kart 3 · Güçlü Yanlar</b>
+                  <div class="row">
+                    <label class="pill"><input id="c3Show" type="checkbox" checked> Göster</label>
+                    <button class="mini-btn" id="aiCard3">🤖 AI</button>
+                  </div>
+                </div>
+                <div class="field"><label>Başlık</label><input id="c3Title" type="text" value="Güçlü Yanlar"/></div>
+                <div class="field"><label>Satırlar</label><textarea id="c3Lines">Pozitif sınıf yönetimi
+Veli iletişimi</textarea></div>
+              </div>
+
+              <div class="cardbox">
+                <div class="cardbox-head">
+                  <b>Kart 4 · Gelişim/Sertifikalar</b>
+                  <div class="row">
+                    <label class="pill"><input id="c4Show" type="checkbox" checked> Göster</label>
+                    <button class="mini-btn" id="aiCard4">🤖 AI</button>
+                  </div>
+                </div>
+                <div class="field"><label>Başlık</label><input id="c4Title" type="text" value="Mesleki Gelişim & Sertifikalar"/></div>
+                <div class="field"><label>Satırlar</label><textarea id="c4Lines">PYP Category 1
+Workshop & seminerler</textarea></div>
+              </div>
+
+              <div class="row">
+                <button class="mini-btn" id="aiAllCards">🤖 Hepsini AI ile doldur</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- EDU -->
+          <div class="section" id="tabEdu">
+            <div class="cardbox">
+              <div class="cardbox-head">
+                <b>Eğitim</b>
+                <span class="tiny">Dinamik kartlar</span>
+              </div>
+              <div id="eduList"></div>
+              <div class="row">
+                <button class="mini-btn" id="btnAddEdu">+ Eğitim ekle</button>
+                <button class="mini-btn" id="aiEduAll">🤖 AI düzenle</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- EXP -->
+          <div class="section" id="tabExp">
+            <div class="cardbox">
+              <div class="cardbox-head">
+                <b>Deneyim</b>
+                <span class="tiny">Dinamik kartlar</span>
+              </div>
+              <div id="expList"></div>
+              <div class="row">
+                <button class="mini-btn" id="btnAddExp">+ Deneyim ekle</button>
+                <button class="mini-btn" id="aiExpAll">🤖 AI bullet</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- CERT -->
+          <div class="section" id="tabCert">
+            <div class="cardbox">
+              <div class="cardbox-head">
+                <b>Sertifikalar</b>
+                <span class="tiny">Kütüphane + ekle</span>
+              </div>
+              <div class="field">
+                <label>Önerilen sertifikalar (seçtikçe eklenir)</label>
+                <select id="certLibrary"></select>
+                <div class="row">
+                  <button class="mini-btn" id="btnAddCertFromLib">+ Ekle</button>
+                  <button class="mini-btn" id="btnSuggestCert">🤖 Öner</button>
+                </div>
+                <div class="hint">PYP/IB odaklı tüm türleri kaçırmamak için kütüphane burada.</div>
+              </div>
+
+              <div class="hr"></div>
+
+              <div id="certList"></div>
+              <div class="row">
+                <button class="mini-btn" id="btnAddCert">+ Sertifika ekle</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- REFS -->
+          <div class="section" id="tabRefs">
+            <div class="cardbox">
+              <div class="cardbox-head">
+                <b>Referanslar</b>
+                <span class="tiny">Kartlar + logo/link</span>
+              </div>
+              <div id="refList"></div>
+              <div class="row">
+                <button class="mini-btn" id="btnAddRef">+ Referans ekle</button>
+                <button class="mini-btn" id="aiRefAll">🤖 AI açıklama</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ESSAY -->
+          <div class="section" id="tabEssay">
+            <div class="cardbox">
+              <div class="cardbox-head">
+                <b>Essay / Niyet</b>
+                <span class="tiny">AI taslak + SEO kullan</span>
+              </div>
+              <div class="grid2">
+                <div class="field">
+                  <label>Tür</label>
+                  <select id="essayType">
+                    <option value="motivation">Niyet mektubu</option>
+                    <option value="teaching">Teaching philosophy</option>
+                    <option value="cover">Cover letter</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Konu</label>
+                  <input id="essayTitle" type="text" placeholder="Örn: Inquiry ve öğrenci ajansı"/>
+                </div>
+              </div>
+              <div class="field">
+                <label>Hedef kurum / pozisyon</label>
+                <input id="essayTarget" type="text" placeholder="Örn: X Koleji · PYP Class Teacher"/>
+              </div>
+              <div class="field">
+                <label>Metin</label>
+                <textarea id="essayText" placeholder="AI ile yaz veya manuel ekle."></textarea>
+              </div>
+              <div class="row">
+                <button class="mini-btn" id="aiEssayBtn">🤖 AI ile yaz</button>
+                <button class="mini-btn" id="btnClearEssay">🧹 Temizle</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI STUDIO -->
+          <div class="section" id="tabAI">
+            <div class="cardbox">
+              <div class="cardbox-head">
+                <b>AI Stüdyo</b>
+                <span class="tiny">Kural tabanlı “akıllı taslak” + isteğe bağlı</span>
+              </div>
+              <div class="field">
+                <label>AI Rehber Notu</label>
+                <textarea id="aiGuide" placeholder="Buraya hedefini yaz. AI, çerçeve+SEO’ya göre taslak üretir."></textarea>
+              </div>
+              <div class="row">
+                <button class="mini-btn" id="aiRunAll">🚀 Akıllı doldur</button>
+                <button class="mini-btn" id="aiCvComment">🧠 AI CV yorumu üret</button>
+              </div>
+              <div class="field" style="margin-top:10px;">
+                <label>AI Çıktı / Log</label>
+                <textarea id="aiLog" readonly></textarea>
+                <div class="hint">Not: Bu demo sürümde AI “şablon + bağlam” mantığıyla çalışır. Gerçek API entegrasyonu eklenebilir.</div>
+              </div>
+
+              <div class="hr"></div>
+
+              <div class="field">
+                <label>Geliştirici opsiyonu (isteğe bağlı)</label>
+                <div class="hint">
+                  İstersen ileride, sunucu taraflı bir servisle ChatGPT API bağlanır; güvenli anahtar yönetimi gerekir.
+                  Bu tek-dosya HTML içinde anahtar saklamak güvenli değildir.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- FEEDBACK -->
+          <div class="section" id="tabFeedback">
+            <div class="cardbox">
+              <div class="cardbox-head">
+                <b>Geri Bildirim & Hata Avcısı</b>
+                <span class="tiny">Otomatik tarama + log</span>
+              </div>
+              <div class="row">
+                <button class="mini-btn" id="btnScan">🔍 Hata tara</button>
+                <button class="mini-btn" id="btnFixHints">🛠️ Akıllı öneri</button>
+                <button class="mini-btn" id="btnClearLogs">🧹 Log temizle</button>
+              </div>
+              <div class="field" style="margin-top:10px;">
+                <label>Geri bildirim yaz</label>
+                <textarea id="fbText" placeholder="Sorunu yaz: nerede, ne yaptın, ne bekledin, ne oldu?"></textarea>
+              </div>
+              <div class="row">
+                <button class="mini-btn" id="btnSaveFeedback">💾 Log’a kaydet</button>
+                <button class="mini-btn" id="btnAiFeedback">🤖 AI ile netleştir</button>
+              </div>
+
+              <div class="field" style="margin-top:10px;">
+                <label>Log</label>
+                <textarea id="fbLog" readonly></textarea>
+                <div class="hint">Bu log localStorage’a kaydedilir. Test sürecinde nokta atışı düzeltme listesi çıkarır.</div>
+              </div>
+            </div>
+          </div>
+
+        
+          <div class="section" id="tabManage">
+            <div class="card">
+              <div class="card-title">⚙️ Platform Yönetimi · Patch Merkezi</div>
+              <div class="muted">
+                Kilitli temel sürüm korunur. Buradaki araçlar <b>ekleme/çıkarma/gizleme</b> işlemlerini güvenli şekilde yönetmek için tasarlanmıştır.
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="card">
+                <div class="card-title">🧩 HTML / JS Patch Ekle</div>
+
+                <div class="row">
+                  <label class="lbl">Patch Adı</label>
+                  <input id="pm_patchTitle" class="inp" placeholder="Örn: Yeni Kart · Öğrenci Başarıları" />
+                </div>
+
+                <div class="row">
+                  <label class="lbl">Patch Tipi</label>
+                  <select id="pm_patchType" class="inp">
+                    <option value="main">Ana Modül (yeni başlık)</option>
+                    <option value="sub">Alt Modül (mevcut başlık altında)</option>
+                  </select>
+                </div>
+
+                <div class="row" id="pm_parentWrap">
+                  <label class="lbl">Hangi Sekmeye / Başlığa?</label>
+                  <select id="pm_parent" class="inp"></select>
+                </div>
+
+                <div class="row" id="pm_newHeadWrap">
+                  <label class="lbl">Yeni Başlık Adı (Ana Modül)</label>
+                  <input id="pm_newHead" class="inp" placeholder="Örn: Öğrenci Başarıları" />
+                </div>
+
+                <div class="row">
+                  <label class="lbl">Hedef</label>
+                  <select id="pm_target" class="inp">
+                    <option value="panel">Sadece Panel</option>
+                    <option value="cv">Sadece CV Önizleme</option>
+                    <option value="both" selected>Panel + CV Önizleme</option>
+                  </select>
+                </div>
+
+                <div class="row">
+                  <label class="lbl">HTML (opsiyonel)</label>
+                  <textarea id="pm_html" class="inp" rows="7" placeholder="Buraya eklemek istediğin HTML’i yapıştır..."></textarea>
+                </div>
+
+                <div class="row">
+                  <label class="lbl">JS (opsiyonel)</label>
+                  <textarea id="pm_js" class="inp" rows="6" placeholder="Buraya eklemek istediğin JS’i yapıştır..."></textarea>
+                </div>
+
+                <div class="actions">
+                  <button class="btn" id="pm_addEnable">Ekle & Etkinleştir</button>
+                  <button class="btn ghost" id="pm_save">Sadece Kaydet</button>
+                  <button class="btn ghost" id="pm_test">Test Et</button>
+                </div>
+
+                <div class="muted" style="margin-top:10px">
+                  JS patch’leri sayfanın bağlamında çalışır. Hata olursa otomatik loglanır ve istersen patch’i kapatabilirsin.
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-title">🧭 Başlık & Görünürlük Yönetimi</div>
+                <div class="muted">CV’deki başlıkları ve içerik bloklarını tek tıkla gizle/aç.</div>
+                <div id="pm_sectionsList" class="list"></div>
+
+                <div class="hr"></div>
+
+                <div class="card-title">🗑️ Son Silinenler · Geri Al</div>
+                <div class="muted">Patch silmeleri + (varsa) platformun “silinenler” kayıtları burada toparlanır.</div>
+                <div id="pm_trash" class="list"></div>
+
+                <div class="hr"></div>
+
+                <div class="card-title">📒 Patch Log</div>
+                <div id="pm_log" class="logbox"></div>
+                <div class="actions">
+                  <button class="btn ghost" id="pm_clearLog">Log Temizle</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-title">🧾 Yüklü Patch’ler</div>
+              <div class="muted">Ana/alt modül ilişkisi + hangi sekmeye eklendiği + aktif/pasif kontrolü.</div>
+              <div id="pm_patches" class="list"></div>
+            </div>
+          </div>
+
+</div>
+      </div>
+    </div>
+
+    <!-- Preview -->
+    <div class="preview-wrap">
+      <div class="preview-head">
+        <div class="left">
+          <b>CV Önizleme</b>
+          <span id="previewInfo">A4 · Canlı</span>
+        </div>
+        <div class="row">
+          <button class="btn good" id="btnExportJson" title="Yerel yedek (JSON)">💾 Yedek</button>
+          <button class="btn" id="btnImportJson" title="Yerel geri yükle (JSON)">📥 Yükle</button>
+        </div>
+      </div>
+      <div class="preview-body">
+        <div class="paper" id="paper">
+          <div class="cv-topbar">
+            <div>
+              <div style="font-weight:800; font-size:12px;" id="cvNameRole">Ad Soyad · Rol</div>
+              <div class="contact-lines">
+                <div>
+                  <span>✉ <span id="cvEmail">mail@ornek.com</span></span>
+                  <span>☎ <span id="cvPhone">+90 (5xx) xxx xx xx</span></span>
+                </div>
+                <div>
+                  <span>📍 <span id="cvLocation">İstanbul (Avrupa)</span></span>
+                  <span>🔗 <span id="cvLink">linkedin.com/in/...</span></span>
+                </div>
+              </div>
+            </div>
+            <div style="text-align:right">
+              <div class="qrbox" id="qrBox"><span style="font-size:10px; color:#6b7280">QR</span></div>
+              <div class="qr-cap" id="qrCap">Online CV / Portfolyo</div>
+            </div>
+          </div>
+
+          <div class="profile">
+            <div class="cv-card">
+              <div class="p-head">
+                <div class="photo" id="cvPhoto">CV</div>
+                <div>
+                  <div class="name" id="cvName">Ad Soyad</div>
+                  <div class="role" id="cvRole">Başlık / Rol</div>
+                </div>
+              </div>
+
+              <div class="chips" id="chipWrap"></div>
+
+              <div class="highlight" id="cvHighlight">
+                <span>✨</span>
+                <span id="highlightText">Sorgulama temelli ve öğrenci ajansını merkeze alan...</span>
+              </div>
+
+              <div class="mini-grid">
+                <div class="cv-card" id="mini1">
+                  <div class="mini-title" id="mini1Title">Uzmanlık Alanları</div>
+                  <ul class="mini-list" id="mini1List"></ul>
+                </div>
+                <div class="cv-card" id="mini2">
+                  <div class="mini-title" id="mini2Title">Eğitim Yaklaşımı</div>
+                  <ul class="mini-list" id="mini2List"></ul>
+                </div>
+                <div class="cv-card" id="mini3">
+                  <div class="mini-title" id="mini3Title">Güçlü Yanlar</div>
+                  <ul class="mini-list" id="mini3List"></ul>
+                </div>
+                <div class="cv-card" id="mini4">
+                  <div class="mini-title" id="mini4Title">Mesleki Gelişim & Sertifikalar</div>
+                  <ul class="mini-list" id="mini4List"></ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="cv-card">
+              <div class="mini-title">Özet Not</div>
+              <div class="sec-body" id="cvSummary">
+                Bu CV, seçtiğin çerçeveler ve SEO anahtar kelimeleriyle hedefli şekilde oluşturulur.
+              </div>
+              <div class="hr"></div>
+              <div class="mini-title">Sertifika Özeti</div>
+              <div class="sec-body" id="cvCertSummary">Henüz eklenmedi.</div>
+            </div>
+          </div>
+
+          <div class="sec-title" id="secEduTitle">Eğitim</div>
+          <div class="sec-body" id="cvEdu"></div>
+
+          <div class="sec-title" id="secExpTitle">Deneyim</div>
+          <div class="sec-body" id="cvExp"></div>
+
+          <div class="sec-title" id="secCertTitle">Sertifikalar</div>
+          <div class="sec-body" id="cvCerts"></div>
+
+          <div class="sec-title" id="secRefTitle">Referanslar</div>
+          <div class="sec-body" id="cvRefs"></div>
+
+          <div class="sec-title" id="secEssayTitle">Essay</div>
+          <div class="cv-card" id="cvEssayCard">
+            <div class="meta" id="cvEssayMeta">Tür: Niyet mektubu · Hedef: - · Konu: -</div>
+            <div class="sec-body" id="cvEssayText">—</div>
+          </div>
+
+          <div class="sec-title" id="secAiTitle">AI CV Yorumu</div>
+          <div class="cv-card" id="cvAiCard">
+            <div class="sec-body" id="cvAiComment">—</div>
+          </div>
+
+          <div class="footer">
+            <div id="cvLastUpdate"></div>
+            <div id="cvDeclaration"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal A4 -->
+  <div class="modal" id="a4Modal">
+    <div class="modal-box">
+      <div class="modal-top">
+        <b>A4 Önizleme</b>
+        <div class="row">
+          <button class="btn" id="btnModalPrint">🖨️ Yazdır/PDF</button>
+          <button class="btn" id="btnModalClose">✕</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div id="a4Holder"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Kaydedildi</div>
+</div>
+
+<!-- Optional: QR library (fallbacks exist) -->
+<script>
+/* ========= tiny helpers ========= */
+const $ = (id)=>document.getElementById(id);
+const LS_KEY = "AKILLI_CV_PLATFORM_V1_STATE";
+const LOG_KEY = "AKILLI_CV_PLATFORM_V1_FEEDBACK";
+const toast = (msg)=>{
+  const t=$("toast"); t.textContent=msg; t.style.display="block";
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer=setTimeout(()=>t.style.display="none",1400);
+};
+const safe = (s)=> (s||"").toString().replace(/[<>]/g,"");
+const lines = (t)=> (t||"").split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+const nowMMYYYY = ()=>{
+  const d=new Date(); const m=String(d.getMonth()+1).padStart(2,"0"); return `${m}/${d.getFullYear()}`;
+};
+
+/* ========= theme / device ========= */
+function applyTheme(mode){
+  if(mode==="light") document.documentElement.setAttribute("data-theme","light");
+  else if(mode==="dark") document.documentElement.setAttribute("data-theme","dark");
+  else document.documentElement.setAttribute("data-theme","system");
+  localStorage.setItem("AKILLI_THEME", mode);
+}
+function setSegActive(groupIds, activeId){
+  groupIds.forEach(id=>$(id).classList.toggle("active", id===activeId));
+}
+function applyDevice(mode){
+  // No transform scaling. Only layout hint.
+  $("previewInfo").textContent = "A4 · Canlı · " + (mode==="mobile" ? "Mobil" : "Masaüstü");
+  localStorage.setItem("AKILLI_DEVICE", mode);
+}
+
+/* ========= profession & specialty ========= */
+const PROFESSIONS = [
+  "Avukat","Doktor","Öğretmen","Mühendis","Yazılımcı","Tasarımcı","Muhasebeci","Pazarlama Uzmanı",
+  "Satış Uzmanı","İK Uzmanı","Şoför","Aşçı","Hemşire","Diş Hekimi","Eczacı","Psikolog","Mimar",
+  "Proje Yöneticisi","Ürün Yöneticisi","Serbest Meslek","Diğer"
+].sort((a,b)=>a.localeCompare(b,"tr"));
+const SPECIALTIES = {
+  "Öğretmen":["Sınıf Öğretmeni","PYP Öğretmeni","Branş Öğretmeni","Rehberlik","Okul Öncesi","Diğer"],
+  "Doktor":["Pratisyen","Uzmanlık Adayı","Dahiliye","Cerrahi","Pediatri","Diğer"],
+  "Avukat":["Ceza","İş Hukuku","Ticaret","Aile","Şirket","Diğer"],
+  "Mühendis":["Yazılım","Elektrik-Elektronik","Makine","İnşaat","Endüstri","Diğer"],
+  "Serbest Meslek":["Danışman","Koç","Eğitmen","Freelance","Diğer"],
+  "Diğer":["Genel","Diğer"]
+};
+function rebuildSpecialties(){
+  const p = $("professionSelect").value;
+  const list = SPECIALTIES[p] || ["Genel","Diğer"];
+  $("specialtySelect").innerHTML = list.map(x=>`<option value="${x}">${x}</option>`).join("");
+}
+
+/* ========= country / city / phone ========= */
+const COUNTRIES = [
+  {code:"TR", name:"Türkiye", dial:"+90", pattern:"TR", max:10, hint:"+90 (5xx) xxx xx xx"},
+  {code:"US", name:"United States", dial:"+1", pattern:"US", max:10, hint:"+1 (xxx) xxx-xxxx"},
+  {code:"GB", name:"United Kingdom", dial:"+44", pattern:"GB", max:10, hint:"+44 xxxx xxx xxxx"},
+  {code:"DE", name:"Deutschland", dial:"+49", pattern:"DE", max:11, hint:"+49 xxxx xxxxxx"},
+  {code:"OTHER", name:"Diğer (manuel)", dial:"+", pattern:"GEN", max:16, hint:"+[ülke] [numara]"}
+];
+function buildCountry(){
+  $("countrySelect").innerHTML = COUNTRIES.map(c=>`<option value="${c.code}">${c.name} (${c.dial})</option>`).join("");
+}
+function buildCity(){
+  $("citySelect").innerHTML = `
+    <option value="İstanbul (Avrupa)">İstanbul (Avrupa)</option>
+    <option value="İstanbul (Anadolu)">İstanbul (Anadolu)</option>
+    <option value="Ankara">Ankara</option>
+    <option value="İzmir">İzmir</option>
+    <option value="Bursa">Bursa</option>
+    <option value="Diğer">Diğer</option>
+  `;
+}
+function digitsOnly(v){ return (v||"").replace(/\D/g,""); }
+function formatPhone(countryCode, raw){
+  const c = COUNTRIES.find(x=>x.code===countryCode) || COUNTRIES[0];
+  let d = digitsOnly(raw);
+  // remove leading country digits if user pasted full
+  if(c.code==="TR"){
+    if(d.startsWith("90")) d = d.slice(2);
+    if(d.startsWith("0")) d = d.slice(1);
+    d = d.slice(0,10);
+    let out = "+90";
+    if(d.length){
+      out += " (" + d.slice(0,3);
+      if(d.length>=3) out += ")";
+      if(d.length>3) out += " " + d.slice(3,6);
+      if(d.length>6) out += " " + d.slice(6,8);
+      if(d.length>8) out += " " + d.slice(8,10);
+    }
+    return out;
+  }
+  // basic formats for others (simple, not perfect for every country)
+  if(c.code==="US"){
+    d = d.replace(/^1/,"").slice(0,10);
+    let out = "+1";
+    if(d.length){
+      out += " (" + d.slice(0,3) + ")";
+      if(d.length>3) out += " " + d.slice(3,6);
+      if(d.length>6) out += "-" + d.slice(6,10);
+    }
+    return out;
+  }
+  if(c.code==="GB"){
+    d = d.replace(/^44/,"").slice(0,10);
+    let out = "+44";
+    if(d.length){
+      out += " " + d.slice(0,4);
+      if(d.length>4) out += " " + d.slice(4,7);
+      if(d.length>7) out += " " + d.slice(7,10);
+    }
+    return out;
+  }
+  if(c.code==="DE"){
+    d = d.replace(/^49/,"").slice(0,11);
+    let out = "+49";
+    if(d.length){
+      out += " " + d.slice(0,4);
+      if(d.length>4) out += " " + d.slice(4);
+    }
+    return out;
+  }
+  // generic
+  d = d.slice(0, c.max || 16);
+  return (c.dial==="+" ? "+" : c.dial) + " " + d;
+}
+function phoneMaxForCountry(code){
+  const c = COUNTRIES.find(x=>x.code===code) || COUNTRIES[0];
+  $("phoneHint").textContent = c.hint || "Telefon formatı";
+}
+
+/* ========= data model ========= */
+let state = {
+  profession:"Öğretmen", specialty:"Sınıf Öğretmeni", professionCustom:"",
+  goal:"job",
+  show:{refs:true, essay:true, aiComment:true},
+  profile:{name:"", role:"", highlight:"", photoData:""},
+  contact:{email:"", link:"", country:"TR", phone:"", city:"İstanbul (Avrupa)", district:"", qrUrl:"", qrLabel:"Online CV / Portfolyo", qrImg:"", lastUpdate:"", declaration:"Bu CV’de yer alan bilgilerin doğru ve güncel olduğunu beyan ederim."},
+  seo:{frameworks:{pyp:true, ubd:false, sel:false, stem:false, meb:false}, keywords:["IB PYP","inquiry-based learning","öğrenci ajansı"]},
+  cards:{
+    c1:{show:true,title:"Uzmanlık Alanları",lines:["İlkokul 1–4 düzeyi","Unit of inquiry planlama"]},
+    c2:{show:true,title:"Eğitim Yaklaşımı",lines:["Inquiry temelli öğrenme","Öğrenci merkezli sınıf kültürü"]},
+    c3:{show:true,title:"Güçlü Yanlar",lines:["Pozitif sınıf yönetimi","Veli iletişimi"]},
+    c4:{show:true,title:"Mesleki Gelişim & Sertifikalar",lines:["PYP Category 1","Workshop & seminerler"]},
+  },
+  edu:[],
+  exp:[],
+  certs:[],
+  refs:[],
+  essay:{type:"motivation", title:"", target:"", text:""},
+  ai:{comment:"", guide:"", log:""},
+  feedback:{log:""}
+};
+
+function saveState(){
+  try{
+    localStorage.setItem(LS_KEY, JSON.stringify(state));
+    $("statePill").textContent = "Kaydedildi";
+    toast("Kaydedildi");
+  }catch(e){
+    $("statePill").textContent = "Kayıt hatası";
+  }
+}
+let saveTimer=null;
+function scheduleSave(){
+  $("statePill").textContent = "Kaydediliyor…";
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(saveState, 250);
+}
+function loadState(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(raw) state = Object.assign(state, JSON.parse(raw));
+  }catch(e){}
+}
+
+/* ========= UI binding ========= */
+function setTab(tabId){
+  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active", t.dataset.tab===tabId));
+  document.querySelectorAll(".section").forEach(s=>s.classList.toggle("active", s.id===tabId));
+}
+function openPanel(open){
+  const drawer=$("drawer"), overlay=$("overlay");
+  if(open){
+    drawer.classList.add("open"); overlay.classList.add("open");
+  } else {
+    drawer.classList.remove("open"); overlay.classList.remove("open");
+  }
+}
+
+/* ========= CV rendering ========= */
+function renderChips(){
+  const wrap=$("chipWrap");
+  wrap.innerHTML="";
+  (state.seo.keywords||[]).slice(0,16).forEach(k=>{
+    const s=document.createElement("span"); s.className="chip"; s.textContent=k; wrap.appendChild(s);
+  });
+}
+function renderCardLists(){
+  const map = [
+    ["c1","mini1","mini1Title","mini1List", $("c1Show")],
+    ["c2","mini2","mini2Title","mini2List", $("c2Show")],
+    ["c3","mini3","mini3Title","mini3List", $("c3Show")],
+    ["c4","mini4","mini4Title","mini4List", $("c4Show")],
+  ];
+  map.forEach(([k, boxId, titleId, listId])=>{
+    const data=state.cards[k];
+    $(titleId).textContent = data.title || "";
+    const ul=$(listId); ul.innerHTML="";
+    (data.lines||[]).forEach(l=>{
+      const li=document.createElement("li"); li.textContent=l; ul.appendChild(li);
+    });
+    $(boxId).style.display = data.show ? "" : "none";
+  });
+}
+function renderEdu(){
+  const c=$("cvEdu"); c.innerHTML="";
+  if(!state.edu.length){ c.innerHTML = '<div class="item"><b>—</b><div class="meta">Henüz eklenmedi</div></div>'; return; }
+  state.edu.forEach(e=>{
+    const div=document.createElement("div"); div.className="item";
+    div.innerHTML = `<b>${safe(e.program||"Eğitim")} ${e.degree?`(${safe(e.degree)})`:""}${e.school?` – ${safe(e.school)}`:""}</b>
+      <div class="meta">${safe([e.dates,e.location].filter(Boolean).join(" · "))}</div>
+      ${e.notes?`<div>${safe(e.notes)}</div>`:""}`;
+    c.appendChild(div);
+  });
+}
+function renderExp(){
+  const c=$("cvExp"); c.innerHTML="";
+  if(!state.exp.length){ c.innerHTML = '<div class="item"><b>—</b><div class="meta">Henüz eklenmedi</div></div>'; return; }
+  state.exp.forEach(e=>{
+    const div=document.createElement("div"); div.className="item";
+    const bullets=(e.bullets||[]).map(b=>`<li>${safe(b)}</li>`).join("");
+    div.innerHTML = `<b>${safe(e.org||"Kurum")}${e.role?` – ${safe(e.role)}`:""}</b>
+      <div class="meta">${safe([e.location,e.dates].filter(Boolean).join(" · "))}</div>
+      ${(e.tags||[]).length?`<div class="meta">Etiketler: ${safe(e.tags.join(", "))}</div>`:""}
+      ${bullets?`<ul class="bul">${bullets}</ul>`:""}`;
+    c.appendChild(div);
+  });
+}
+function renderCerts(){
+  const c=$("cvCerts"); c.innerHTML="";
+  if(!state.certs.length){ c.innerHTML = '<div class="item"><b>—</b><div class="meta">Henüz eklenmedi</div></div>'; $("cvCertSummary").textContent="Henüz eklenmedi."; return; }
+  state.certs.forEach(s=>{
+    const div=document.createElement("div"); div.className="item";
+    div.innerHTML = `<b>${safe(s.title||"Sertifika")}</b>
+      <div class="meta">${safe([s.issuer,s.year].filter(Boolean).join(" · "))}</div>`;
+    c.appendChild(div);
+  });
+  $("cvCertSummary").textContent = state.certs.slice(0,4).map(x=>x.title).filter(Boolean).join(" · ") + (state.certs.length>4 ? " · …" : "");
+}
+function renderRefs(){
+  const secTitle=$("secRefTitle"), secBody=$("cvRefs");
+  secTitle.style.display = state.show.refs ? "" : "none";
+  secBody.style.display = state.show.refs ? "" : "none";
+  if(!state.show.refs) return;
+  secBody.innerHTML="";
+  if(!state.refs.length){ secBody.innerHTML = '<div class="item"><b>—</b><div class="meta">Henüz eklenmedi</div></div>'; return; }
+  state.refs.forEach(r=>{
+    const div=document.createElement("div"); div.className="item";
+    div.innerHTML = `<b>${safe(r.name||"Referans")} ${r.role?`— ${safe(r.role)}`:""}</b>
+      <div class="meta">${safe([r.relation,r.period].filter(Boolean).join(" · "))}</div>
+      ${r.focus?`<div>${safe(r.focus)}</div>`:""}`;
+    secBody.appendChild(div);
+  });
+}
+function renderEssay(){
+  const st=$("secEssayTitle"), card=$("cvEssayCard");
+  st.style.display = state.show.essay ? "" : "none";
+  card.style.display = state.show.essay ? "" : "none";
+  if(!state.show.essay) return;
+  const typeLabel = state.essay.type==="teaching"?"Teaching philosophy":state.essay.type==="cover"?"Cover letter":"Niyet mektubu";
+  $("cvEssayMeta").textContent = `Tür: ${typeLabel} · Hedef: ${state.essay.target||"-"} · Konu: ${state.essay.title||"-"}`;
+  $("cvEssayText").textContent = state.essay.text || "—";
+}
+function renderAIComment(){
+  const st=$("secAiTitle"), card=$("cvAiCard");
+  st.style.display = state.show.aiComment ? "" : "none";
+  card.style.display = state.show.aiComment ? "" : "none";
+  if(!state.show.aiComment) return;
+  $("cvAiComment").textContent = state.ai.comment || "—";
+}
+function renderFooter(){
+  $("cvLastUpdate").textContent = state.contact.lastUpdate ? `CV son güncelleme: ${state.contact.lastUpdate}` : "";
+  $("cvDeclaration").textContent = state.contact.declaration || "";
+}
+function renderHeader(){
+  const name = state.profile.name || "Ad Soyad";
+  const role = state.profile.role || "Başlık / Rol";
+  $("cvNameRole").textContent = `${name} · ${role}`;
+  $("cvName").textContent = name;
+  $("cvRole").textContent = role;
+
+  $("highlightText").textContent = state.profile.highlight || "—";
+  $("cvEmail").textContent = state.contact.email || "mail@ornek.com";
+  $("cvLink").textContent = state.contact.link || "linkedin.com/in/...";
+  $("cvPhone").textContent = state.contact.phone || "+90 (5xx) xxx xx xx";
+
+  const locParts = [];
+  if(state.contact.city) locParts.push(state.contact.city);
+  if(state.contact.district) locParts.push(state.contact.district);
+  $("cvLocation").textContent = locParts.join(" · ") || "—";
+
+  // photo
+  const photo=$("cvPhoto");
+  if(state.profile.photoData){
+    photo.innerHTML = `<img alt="profil" src="${state.profile.photoData}">`;
+  } else {
+    const initials = (name||"").split(" ").filter(Boolean).slice(0,2).map(w=>w[0].toUpperCase()).join("") || "CV";
+    photo.textContent = initials;
+    photo.innerHTML = initials;
+  }
+
+  // qr
+  const qb=$("qrBox");
+  qb.innerHTML = "";
+  if(state.contact.qrImg){
+    qb.innerHTML = `<img alt="qr" src="${state.contact.qrImg}">`;
+  } else if(state.contact.qrData){
+    qb.innerHTML = `<img alt="qr" src="${state.contact.qrData}">`;
+  } else {
+    qb.innerHTML = `<span style="font-size:10px; color:#6b7280">QR</span>`;
+  }
+  $("qrCap").textContent = state.contact.qrLabel || "Online CV / Portfolyo";
+}
+function renderAll(){
+  renderHeader();
+  renderChips();
+  renderCardLists();
+  renderEdu();
+  renderExp();
+  renderCerts();
+  renderRefs();
+  renderEssay();
+  renderAIComment();
+  renderFooter();
+}
+
+/* ========= dynamic lists UI ========= */
+function eduCardTemplate(item, idx){
+  return `
+  <div class="cardbox">
+    <div class="cardbox-head">
+      <b>Eğitim #${idx+1}</b>
+      <div class="row">
+        <button class="mini-btn" data-act="ai">🤖 AI</button>
+        <button class="mini-btn" data-act="del">Sil</button>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Derece</label><input data-k="degree" value="${safe(item.degree||"")}"></div>
+      <div class="field"><label>Program</label><input data-k="program" value="${safe(item.program||"")}"></div>
+    </div>
+    <div class="field"><label>Kurum</label><input data-k="school" value="${safe(item.school||"")}"></div>
+    <div class="grid2">
+      <div class="field"><label>Şehir/Ülke</label><input data-k="location" value="${safe(item.location||"")}"></div>
+      <div class="field"><label>Tarih</label><input data-k="dates" value="${safe(item.dates||"")}"></div>
+    </div>
+    <div class="field"><label>Kısa açıklama</label><textarea data-k="notes">${safe(item.notes||"")}</textarea></div>
+  </div>`;
+}
+function rebuildEduUI(){
+  const wrap=$("eduList");
+  wrap.innerHTML = state.edu.map(eduCardTemplate).join("") || `<div class="tiny">Henüz eğitim eklenmedi.</div>`;
+  wrap.querySelectorAll(".cardbox").forEach((box,idx)=>{
+    box.querySelectorAll("input,textarea").forEach(el=>{
+      el.addEventListener("input", ()=>{
+        const k=el.dataset.k; state.edu[idx][k]=el.value; scheduleSave(); renderAll();
+      });
+    });
+    box.querySelector('[data-act="del"]')?.addEventListener("click", ()=>{
+      state.edu.splice(idx,1); scheduleSave(); rebuildEduUI(); renderAll();
+    });
+    box.querySelector('[data-act="ai"]')?.addEventListener("click", ()=>{
+      const p = state.edu[idx].program || "Program";
+      state.edu[idx].notes = `${p} sürecinde öğretim tasarımı, ölçme-değerlendirme ve sınıf yönetimi alanlarında gelişim sağladım.`;
+      scheduleSave(); rebuildEduUI(); renderAll();
+      aiLog(`Eğitim #${idx+1} için AI açıklama oluşturuldu.`);
+    });
+  });
+}
+
+function expCardTemplate(item, idx){
+  return `
+  <div class="cardbox">
+    <div class="cardbox-head">
+      <b>Deneyim #${idx+1}</b>
+      <div class="row">
+        <button class="mini-btn" data-act="ai">🤖 AI</button>
+        <button class="mini-btn" data-act="del">Sil</button>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Kurum</label><input data-k="org" value="${safe(item.org||"")}"></div>
+      <div class="field"><label>Pozisyon</label><input data-k="role" value="${safe(item.role||"")}"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Konum</label><input data-k="location" value="${safe(item.location||"")}"></div>
+      <div class="field"><label>Tarih</label><input data-k="dates" value="${safe(item.dates||"")}"></div>
+    </div>
+    <div class="field"><label>Etiketler (virgül)</label><input data-k="tags" value="${safe((item.tags||[]).join(", "))}"></div>
+    <div class="field"><label>Bullet (her satır 1)</label><textarea data-k="bullets">${safe((item.bullets||[]).join("\n"))}</textarea></div>
+  </div>`;
+}
+function rebuildExpUI(){
+  const wrap=$("expList");
+  wrap.innerHTML = state.exp.map(expCardTemplate).join("") || `<div class="tiny">Henüz deneyim eklenmedi.</div>`;
+  wrap.querySelectorAll(".cardbox").forEach((box,idx)=>{
+    box.querySelectorAll("input,textarea").forEach(el=>{
+      el.addEventListener("input", ()=>{
+        const k=el.dataset.k;
+        if(k==="tags") state.exp[idx].tags = el.value.split(",").map(x=>x.trim()).filter(Boolean);
+        else if(k==="bullets") state.exp[idx].bullets = lines(el.value);
+        else state.exp[idx][k]=el.value;
+        scheduleSave(); renderAll();
+      });
+    });
+    box.querySelector('[data-act="del"]')?.addEventListener("click", ()=>{
+      state.exp.splice(idx,1); scheduleSave(); rebuildExpUI(); renderAll();
+    });
+    box.querySelector('[data-act="ai"]')?.addEventListener("click", ()=>{
+      const tags = (state.exp[idx].tags||[]).join(" ").toLowerCase();
+      const bullets=[];
+      if(state.seo.frameworks.pyp || tags.includes("pyp")) bullets.push("Inquiry temelli unit planları tasarladım ve öğrenci ajansını güçlendiren rutinler oluşturdum.");
+      if(state.seo.frameworks.ubd || tags.includes("ubd")) bullets.push("UbD yaklaşımıyla hedef–kanıt–öğrenme deneyimlerini uyumlu hale getirdim.");
+      if(state.seo.frameworks.sel || tags.includes("sel")) bullets.push("Sosyo-duygusal gelişimi destekleyen sınıf iklimi ve ilişki temelli yönetim uyguladım.");
+      if(!bullets.length) bullets.push("Öğrenci merkezli öğrenme deneyimleri tasarladım ve düzenli geri bildirim döngüleri kurdum.");
+      state.exp[idx].bullets = bullets;
+      scheduleSave(); rebuildExpUI(); renderAll();
+      aiLog(`Deneyim #${idx+1} için AI bullet oluşturuldu.`);
+    });
+  });
+}
+
+function certTemplate(item, idx){
+  return `
+  <div class="cardbox">
+    <div class="cardbox-head">
+      <b>Sertifika #${idx+1}</b>
+      <div class="row">
+        <button class="mini-btn" data-act="del">Sil</button>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Başlık</label><input data-k="title" value="${safe(item.title||"")}"></div>
+      <div class="field"><label>Veren</label><input data-k="issuer" value="${safe(item.issuer||"")}"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Yıl</label><input data-k="year" value="${safe(item.year||"")}"></div>
+      <div class="field"><label>Link (ops.)</label><input data-k="link" value="${safe(item.link||"")}"></div>
+    </div>
+  </div>`;
+}
+function rebuildCertUI(){
+  const wrap=$("certList");
+  wrap.innerHTML = state.certs.map(certTemplate).join("") || `<div class="tiny">Henüz sertifika eklenmedi.</div>`;
+  wrap.querySelectorAll(".cardbox").forEach((box,idx)=>{
+    box.querySelectorAll("input").forEach(el=>{
+      el.addEventListener("input", ()=>{
+        state.certs[idx][el.dataset.k]=el.value; scheduleSave(); renderAll();
+      });
+    });
+    box.querySelector('[data-act="del"]')?.addEventListener("click", ()=>{
+      state.certs.splice(idx,1); scheduleSave(); rebuildCertUI(); renderAll();
+    });
+  });
+}
+
+function refTemplate(item, idx){
+  return `
+  <div class="cardbox">
+    <div class="cardbox-head">
+      <b>Referans #${idx+1}</b>
+      <div class="row">
+        <button class="mini-btn" data-act="ai">🤖 AI</button>
+        <button class="mini-btn" data-act="del">Sil</button>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Ad Soyad</label><input data-k="name" value="${safe(item.name||"")}"></div>
+      <div class="field"><label>Pozisyon</label><input data-k="role" value="${safe(item.role||"")}"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>İlişki</label><input data-k="relation" value="${safe(item.relation||"")}"></div>
+      <div class="field"><label>Dönem</label><input data-k="period" value="${safe(item.period||"")}"></div>
+    </div>
+    <div class="field"><label>Odak</label><textarea data-k="focus">${safe(item.focus||"")}</textarea></div>
+  </div>`;
+}
+function rebuildRefUI(){
+  const wrap=$("refList");
+  wrap.innerHTML = state.refs.map(refTemplate).join("") || `<div class="tiny">Henüz referans eklenmedi.</div>`;
+  wrap.querySelectorAll(".cardbox").forEach((box,idx)=>{
+    box.querySelectorAll("input,textarea").forEach(el=>{
+      el.addEventListener("input", ()=>{
+        state.refs[idx][el.dataset.k]=el.value; scheduleSave(); renderAll();
+      });
+    });
+    box.querySelector('[data-act="del"]')?.addEventListener("click", ()=>{
+      state.refs.splice(idx,1); scheduleSave(); rebuildRefUI(); renderAll();
+    });
+    box.querySelector('[data-act="ai"]')?.addEventListener("click", ()=>{
+      if(!state.refs[idx].focus){
+        state.refs[idx].focus = "Sınıf içi uygulamalar, ekip çalışması, iletişim ve planlama disiplinim hakkında referans verebilir.";
+      }
+      scheduleSave(); rebuildRefUI(); renderAll();
+      aiLog(`Referans #${idx+1} için AI odak metni eklendi.`);
+    });
+  });
+}
+
+/* ========= Certificates library (IB/PYP) ========= */
+const IB_PYP_CERTS = [
+  ["IB Educator Certificates (IBEC) – PYP","IB"],
+  ["PYP Category 1 (Making the PYP Happen)","IB"],
+  ["PYP Category 2 (Specialist / Classroom)","IB"],
+  ["PYP Category 3 (Leadership)","IB"],
+  ["PYP Workshop: Assessment in the PYP","IB"],
+  ["PYP Workshop: Agency / Student Voice","IB"],
+  ["PYP Workshop: ATL Skills","IB"],
+  ["PYP Workshop: Transdisciplinary Learning","IB"],
+  ["PYP Workshop: Inquiry-Based Learning","IB"],
+  ["IB Approaches to Teaching and Learning (ATL)","IB"],
+  ["IB Learner Profile & International Mindedness","IB"],
+  ["Safeguarding / Child Protection Training","Genel"],
+  ["First Aid (İlk Yardım)","Genel"],
+  ["Google Certified Educator","Google"],
+  ["Apple Teacher","Apple"],
+  ["Cambridge TKT / CELTA / TEFL (dil/öğretim)","Dil"]
+];
+function buildCertLibrary(){
+  $("certLibrary").innerHTML = IB_PYP_CERTS.map((c,i)=>`<option value="${i}">${c[0]} · ${c[1]}</option>`).join("");
+}
+
+/* ========= AI (rule-based) ========= */
+function frameworksText(){
+  const f=state.seo.frameworks;
+  const arr=[];
+  if(f.pyp) arr.push("PYP");
+  if(f.ubd) arr.push("UbD");
+  if(f.sel) arr.push("SEL");
+  if(f.stem) arr.push("STEM");
+  if(f.meb) arr.push("MEB");
+  return arr.length?arr.join(", "):"çağdaş öğretim yaklaşımları";
+}
+function aiLog(msg){
+  const line = `[${new Date().toLocaleString()}] ${msg}`;
+  state.ai.log = (state.ai.log ? state.ai.log + "\n" : "") + line;
+  $("aiLog").value = state.ai.log;
+  scheduleSave();
+}
+function aiFillHighlight(){
+  const role = state.profile.role || "öğretmen";
+  const fw = frameworksText();
+  state.profile.highlight = `${role} olarak öğrencilerin merakını canlı tutan, ${fw} odaklı ve ölçme-değerlendirme kanıtlarıyla desteklenen öğrenme deneyimleri tasarlıyorum.`;
+  $("inHighlight").value = state.profile.highlight;
+  aiLog("Highlight AI ile oluşturuldu.");
+}
+function aiSuggestKeywords(){
+  const base=[];
+  const f=state.seo.frameworks;
+  if(f.pyp){ base.push("IB PYP","inquiry-based learning","student agency","unit of inquiry","transdisciplinary learning"); }
+  if(f.ubd){ base.push("UbD","backward design","learning evidence","assessment alignment"); }
+  if(f.sel){ base.push("SEL","classroom climate","relationship-based management"); }
+  if(f.stem){ base.push("STEM projects","design thinking"); }
+  if(f.meb){ base.push("MEB kazanımları","müfredat uyumu"); }
+  // profession-based
+  const p = state.profession;
+  if(p==="Doktor") base.push("patient safety","clinical communication","evidence-based practice");
+  if(p==="Avukat") base.push("case management","legal research","client communication");
+  if(p==="Yazılımcı") base.push("clean code","system design","testing","CI/CD");
+  const uniq=[...new Set(base)].slice(0,18);
+  state.seo.keywords = uniq;
+  $("inKeywords").value = uniq.join("\n");
+  aiLog("SEO anahtar kelimeler AI ile önerildi.");
+}
+function aiCardFill(which){
+  const f=state.seo.frameworks;
+  const kws=(state.seo.keywords||[]).slice(0,6);
+  const p=state.profession;
+  const sp=state.specialty || "";
+  const c=state.cards[which];
+  if(which==="c1"){
+    c.lines = p==="Öğretmen"
+      ? ["Sınıf içi öğrenme tasarımı","Ölçme-değerlendirme kanıtları","Veli iletişimi ve işbirliği","Farklılaştırma ve kapsayıcılık"]
+      : ["Uzmanlık alanı odaklı çalışmalar","Süreç/kalite takibi","İletişim ve koordinasyon","Sürekli gelişim"];
+    if(sp && sp!=="Diğer") c.lines.unshift(sp);
+    if(kws.length) c.lines.push("Anahtar: "+kws.join(" · "));
+  } else if(which==="c2"){
+    c.lines = [];
+    if(f.pyp) c.lines.push("Inquiry döngüsü ile merak–araştırma–yansıtma");
+    if(f.ubd) c.lines.push("Hedef–kanıt–öğrenme deneyimi uyumu (UbD)");
+    if(f.sel) c.lines.push("Güvenli sınıf iklimi, rutinler ve öz düzenleme");
+    if(!c.lines.length) c.lines.push("Öğrenci/katılımcı merkezli yaklaşım, düzenli geri bildirim");
+    c.lines.push("Bağlam: "+frameworksText());
+  } else if(which==="c3"){
+    c.lines = ["İletişim ve ekip çalışması","Zaman yönetimi ve planlama","Veriyle karar alma","Sorumluluk ve tutarlılık"];
+    if(p==="Öğretmen") c.lines.unshift("Pozitif sınıf yönetimi","Öğrenci ajansı ve motivasyon");
+  } else if(which==="c4"){
+    c.lines = [];
+    if(p==="Öğretmen"){
+      if(f.pyp) c.lines.push("PYP Category 1–2–3 atölyeleri / IBEC");
+      c.lines.push("Sınıf yönetimi, ölçme-değerlendirme eğitimleri","Okul içi PD paylaşımları");
+    } else {
+      c.lines.push("Mesleki eğitimler ve sertifikalar","Workshop/seminer katılımları");
+    }
+  }
+  aiLog(`Kart ${which.toUpperCase()} AI ile dolduruldu.`);
+}
+function aiAllCards(){
+  ["c1","c2","c3","c4"].forEach(aiCardFill);
+}
+function aiEssay(){
+  const type = state.essay.type;
+  const typeLabel = type==="teaching"?"teaching philosophy":type==="cover"?"cover letter":"niyet mektubu";
+  const target = state.essay.target || "başvurduğum kurum";
+  const fw = frameworksText();
+  const seo = (state.seo.keywords||[]).slice(0,7);
+  const seoText = seo.length ? `Metinde ${seo.join(", ")} gibi kavramlara yer veriyorum.` : "";
+  const p1 = `Öğretim/çalışma anlayışımın merkezinde net hedefler, ölçülebilir kanıtlar ve öğrenme sürecinde güvenli bir iklim oluşturmak var. ${target} için ${typeLabel} niteliğinde, güçlü bir katkı sunmayı hedefliyorum.`;
+  const p2 = `Planlama yaparken ${fw} yaklaşımından yararlanıyor; hedef–kanıt–uygulama uyumunu koruyorum. ${seoText}`;
+  const p3 = `Ekip çalışması, düzenli iletişim ve sürekli gelişim benim için vazgeçilmez. Süreç odaklı, sürdürülebilir ve sonuç üreten bir çalışma disipliniyle ilerliyorum.`;
+  state.essay.text = [p1,p2,p3].join("\n\n");
+  $("essayText").value = state.essay.text;
+  aiLog("Essay AI ile oluşturuldu.");
+}
+function aiCvComment(){
+  const name = state.profile.name || "Aday";
+  const years = estimateYears();
+  const p = state.profession;
+  const fw = frameworksText();
+  const certCount = state.certs.length;
+  const strengths = state.cards.c3.lines.slice(0,3).join(", ");
+  const s = `${name}, ${p} alanında${years?` yaklaşık ${years} yıllık deneyim izlenimi veren`:""} bir profil sunuyor. ${fw} odağı ve ${certCount} sertifika kaydı, profesyonel gelişimi destekliyor. Öne çıkan güçlü yönler: ${strengths}. Başvurulacak kuruma göre (ör. hedef okul/rol), deneyim bullet’larını “sonuç/etki” cümleleriyle güçlendirmek profili daha da parlatır.`;
+  state.ai.comment = s;
+  $("cvAiComment").textContent = s;
+  aiLog("AI CV yorumu üretildi.");
+  renderAIComment();
+  scheduleSave();
+}
+function estimateYears(){
+  // naive from experience dates like 2019–2024
+  let years=0;
+  (state.exp||[]).forEach(e=>{
+    const m=(e.dates||"").match(/(19|20)\d{2}/g);
+    if(m && m.length>=2){
+      const a=parseInt(m[0],10), b=parseInt(m[m.length-1],10);
+      if(b>=a) years += Math.max(0, b-a);
+    }
+  });
+  return years || 0;
+}
+function runAutopilot(){
+  // minimal: fill missing parts
+  if(!state.profile.highlight) aiFillHighlight();
+  if(!state.seo.keywords || !state.seo.keywords.length) aiSuggestKeywords();
+  aiAllCards();
+  if(state.profession==="Öğretmen" && state.certs.length===0){
+    // add 2 default
+    state.certs.push({title:"PYP Category 1 (Making the PYP Happen)", issuer:"IB", year:""});
+    state.certs.push({title:"Safeguarding / Child Protection Training", issuer:"", year:""});
+    rebuildCertUI();
+    aiLog("Otopilot: Varsayılan sertifikalar eklendi.");
+  }
+  aiCvComment();
+  renderAll();
+  scheduleSave();
+  toast("Otopilot tamamlandı");
+}
+
+/* ========= QR generation (no external libs) =========
+   Minimal QR placeholder: We'll create a simple pseudo-QR pattern (NOT real QR) if library missing.
+   If you need real QR offline, later we can embed a real QR encoder. For now: URL QR requires CDN or upload.
+*/
+async function generateQrDataUrl(text){
+  // If qrcode library exists, use it; otherwise fallback to simple canvas pattern.
+  // Lightweight fallback:
+  const size=160;
+  const canvas=document.createElement("canvas");
+  canvas.width=size; canvas.height=size;
+  const ctx=canvas.getContext("2d");
+  ctx.fillStyle="#fff"; ctx.fillRect(0,0,size,size);
+  // pseudo pattern based on hash
+  let h=0; for(let i=0;i<text.length;i++){ h=(h*31 + text.charCodeAt(i))>>>0; }
+  const cells=25, cell=Math.floor(size/cells);
+  for(let y=0;y<cells;y++){
+    for(let x=0;x<cells;x++){
+      const v = (h + x*131 + y*977) & 1;
+      if(v){
+        ctx.fillStyle="#111827";
+        ctx.fillRect(x*cell,y*cell,cell,cell);
+      }
+    }
+  }
+  // finder-like corners
+  function finder(px,py){
+    ctx.fillStyle="#111827"; ctx.fillRect(px,py,7*cell,7*cell);
+    ctx.fillStyle="#fff"; ctx.fillRect(px+cell,py+cell,5*cell,5*cell);
+    ctx.fillStyle="#111827"; ctx.fillRect(px+2*cell,py+2*cell,3*cell,3*cell);
+  }
+  finder(0,0); finder((cells-7)*cell,0); finder(0,(cells-7)*cell);
+  return canvas.toDataURL("image/png");
+}
+
+/* ========= feedback / scanner ========= */
+function appendFeedback(line){
+  state.feedback.log = (state.feedback.log? state.feedback.log+"\n":"") + line;
+  $("fbLog").value = state.feedback.log;
+  scheduleSave();
+  localStorage.setItem(LOG_KEY, state.feedback.log);
+}
+function loadFeedback(){
+  const raw = localStorage.getItem(LOG_KEY);
+  if(raw){ state.feedback.log = raw; $("fbLog").value = raw; }
+}
+function scanIssues(){
+  const issues=[];
+  if(!state.profile.name.trim()) issues.push("Profil: Ad Soyad boş.");
+  if(state.contact.email && !/^\S+@\S+\.\S+$/.test(state.contact.email)) issues.push("İletişim: E-posta formatı şüpheli.");
+  const c = COUNTRIES.find(x=>x.code===state.contact.country) || COUNTRIES[0];
+  const d=digitsOnly(state.contact.phone);
+  if(state.contact.country==="TR"){
+    const dd = d.startsWith("90")? d.slice(2): (d.startsWith("0")? d.slice(1):d);
+    if(dd && dd.length!==10) issues.push("Telefon: TR için 10 hane olmalı (5xx...).");
+  } else if(d && d.length < 7) issues.push("Telefon: Çok kısa görünüyor.");
+  if(!state.seo.keywords.length) issues.push("SEO: Anahtar kelime yok.");
+  if(state.profession==="Öğretmen" && state.seo.frameworks.pyp && !state.certs.length) issues.push("Sertifika: PYP seçili ama sertifika eklenmemiş.");
+  return issues;
+}
+function smartFixHints(){
+  const issues=scanIssues();
+  if(!issues.length){ appendFeedback(`[${new Date().toLocaleString()}] ✅ Hata bulunamadı.`); toast("Hata bulunamadı"); return; }
+  appendFeedback(`[${new Date().toLocaleString()}] 🔍 Tarama: ${issues.length} bulgu`);
+  issues.forEach(i=>appendFeedback(" - "+i));
+  // suggestions
+  const sug=[];
+  if(issues.some(x=>x.includes("Ad Soyad"))) sug.push("Profil sekmesinde Ad Soyad gir. Bu tüm CV’ye yansır.");
+  if(issues.some(x=>x.includes("SEO"))) sug.push("Çerçeve/SEO sekmesinde AI ile öner deyip chip’lere uygula.");
+  if(issues.some(x=>x.includes("Sertifika"))) sug.push("Sertifikalar sekmesinde kütüphaneden PYP Category 1–2–3 ekle.");
+  if(sug.length){
+    appendFeedback("Öneri:");
+    sug.forEach(s=>appendFeedback(" • "+s));
+  }
+  toast("Tarama tamamlandı");
+}
+
+/* ========= import/export ========= */
+function exportJson(){
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url; a.download="akilli_cv_yedek.json"; document.body.appendChild(a); a.click();
+  setTimeout(()=>{document.body.removeChild(a); URL.revokeObjectURL(url);},0);
+}
+function importJsonFile(){
+  const inp=document.createElement("input");
+  inp.type="file"; inp.accept="application/json";
+  inp.onchange=async ()=> {
+    const f=inp.files && inp.files[0]; if(!f) return;
+    const txt=await f.text();
+    try{
+      const obj=JSON.parse(txt);
+      state = Object.assign(state, obj);
+      hydrateUI();
+      rebuildAllLists();
+      renderAll();
+      scheduleSave();
+      toast("Yedek yüklendi");
+    }catch(e){ toast("JSON okunamadı"); }
+  };
+  inp.click();
+}
+
+/* ========= hydrate UI from state ========= */
+function hydrateUI(){
+  // Start
+  $("professionSelect").value = state.profession || "Öğretmen";
+  rebuildSpecialties();
+  $("specialtySelect").value = state.specialty || $("specialtySelect").value;
+  $("professionCustom").value = state.professionCustom || "";
+  $("goalSelect").value = state.goal || "job";
+  $("showReferences").checked = !!state.show.refs;
+  $("showEssay").checked = !!state.show.essay;
+  $("showAiComment").checked = !!state.show.aiComment;
+
+  // Profile
+  $("inName").value = state.profile.name || "";
+  $("inRole").value = state.profile.role || "";
+  $("inHighlight").value = state.profile.highlight || "";
+
+  // Contact
+  $("inEmail").value = state.contact.email || "";
+  $("inLink").value = state.contact.link || "";
+  $("countrySelect").value = state.contact.country || "TR";
+  phoneMaxForCountry($("countrySelect").value);
+  $("inPhone").value = state.contact.phone || "";
+  $("citySelect").value = state.contact.city || "İstanbul (Avrupa)";
+  $("inDistrict").value = state.contact.district || "";
+  $("inQrUrl").value = state.contact.qrUrl || "";
+  $("inQrLabel").value = state.contact.qrLabel || "Online CV / Portfolyo";
+  $("inLastUpdate").value = state.contact.lastUpdate || "";
+  $("inDeclaration").value = state.contact.declaration || "Bu CV’de yer alan bilgilerin doğru ve güncel olduğunu beyan ederim.";
+
+  // SEO
+  $("fwPYP").checked = !!state.seo.frameworks.pyp;
+  $("fwUbD").checked = !!state.seo.frameworks.ubd;
+  $("fwSEL").checked = !!state.seo.frameworks.sel;
+  $("fwSTEM").checked = !!state.seo.frameworks.stem;
+  $("fwMEB").checked = !!state.seo.frameworks.meb;
+  $("inKeywords").value = (state.seo.keywords||[]).join("\n");
+
+  // Cards
+  ["c1","c2","c3","c4"].forEach(k=>{
+    $(k==="c1"?"c1Show":k==="c2"?"c2Show":k==="c3"?"c3Show":"c4Show").checked = !!state.cards[k].show;
+    $(k==="c1"?"c1Title":k==="c2"?"c2Title":k==="c3"?"c3Title":"c4Title").value = state.cards[k].title || "";
+    $(k==="c1"?"c1Lines":k==="c2"?"c2Lines":k==="c3"?"c3Lines":"c4Lines").value = (state.cards[k].lines||[]).join("\n");
+  });
+
+  // Essay
+  $("essayType").value = state.essay.type || "motivation";
+  $("essayTitle").value = state.essay.title || "";
+  $("essayTarget").value = state.essay.target || "";
+  $("essayText").value = state.essay.text || "";
+
+  // AI panel
+  $("aiGuide").value = state.ai.guide || "";
+  $("aiLog").value = state.ai.log || "";
+}
+function rebuildAllLists(){
+  rebuildEduUI();
+  rebuildExpUI();
+  rebuildCertUI();
+  rebuildRefUI();
+}
+
+/* ========= Wire events ========= */
+function wire(){
+  // Tabs
+  $("tabs").addEventListener("click",(e)=>{
+    const btn=e.target.closest(".tab");
+    if(!btn) return;
+    setTab(btn.dataset.tab);
+  });
+
+  // Panel open/close
+  $("btnOpenPanel").addEventListener("click", ()=>openPanel(true));
+  $("btnClosePanel").addEventListener("click", ()=>openPanel(false));
+  $("overlay").addEventListener("click", ()=>openPanel(false));
+
+  // A4 modal
+  $("btnA4").addEventListener("click", ()=>{
+    const holder=$("a4Holder");
+    holder.innerHTML="";
+    // clone paper
+    const clone=$("paper").cloneNode(true);
+    clone.style.margin="0 auto";
+    holder.appendChild(clone);
+    $("a4Modal").classList.add("open");
+  });
+  $("btnModalClose").addEventListener("click", ()=>$("a4Modal").classList.remove("open"));
+  $("a4Modal").addEventListener("click",(e)=>{ if(e.target.id==="a4Modal") $("a4Modal").classList.remove("open"); });
+  $("btnPrint").addEventListener("click", ()=>window.print());
+  $("btnModalPrint").addEventListener("click", ()=>window.print());
+
+  // Theme buttons
+  $("tSystem").addEventListener("click", ()=>{applyTheme("system"); setSegActive(["tSystem","tLight","tDark"],"tSystem");});
+  $("tLight").addEventListener("click", ()=>{applyTheme("light"); setSegActive(["tSystem","tLight","tDark"],"tLight");});
+  $("tDark").addEventListener("click", ()=>{applyTheme("dark"); setSegActive(["tSystem","tLight","tDark"],"tDark");});
+
+  // Device buttons
+  $("dDesk").addEventListener("click", ()=>{applyDevice("desktop"); setSegActive(["dDesk","dMob"],"dDesk");});
+  $("dMob").addEventListener("click", ()=>{applyDevice("mobile"); setSegActive(["dDesk","dMob"],"dMob"); openPanel(false);});
+
+  // Start flow
+  $("professionSelect").addEventListener("change", ()=>{
+    state.profession = $("professionSelect").value;
+    rebuildSpecialties();
+    state.specialty = $("specialtySelect").value;
+    scheduleSave();
+    renderAll();
+  });
+  $("specialtySelect").addEventListener("change", ()=>{
+    state.specialty = $("specialtySelect").value;
+    scheduleSave(); renderAll();
+  });
+  $("professionCustom").addEventListener("input", ()=>{
+    state.professionCustom = $("professionCustom").value;
+    scheduleSave();
+  });
+  $("goalSelect").addEventListener("change", ()=>{
+    state.goal = $("goalSelect").value; scheduleSave();
+  });
+  $("showReferences").addEventListener("change", ()=>{
+    state.show.refs = $("showReferences").checked; scheduleSave(); renderAll();
+  });
+  $("showEssay").addEventListener("change", ()=>{
+    state.show.essay = $("showEssay").checked; scheduleSave(); renderAll();
+  });
+  $("showAiComment").addEventListener("change", ()=>{
+    state.show.aiComment = $("showAiComment").checked; scheduleSave(); renderAll();
+  });
+
+  $("btnSmartSetup").addEventListener("click", ()=>{
+    // profession-based defaults
+    const p=state.profession;
+    if(p==="Öğretmen"){
+      state.seo.frameworks.pyp=true;
+      state.seo.keywords = ["IB PYP","inquiry-based learning","student agency","unit of inquiry","assessment in the PYP","ATL skills"];
+      $("fwPYP").checked=true;
+      $("inKeywords").value = state.seo.keywords.join("\n");
+      aiAllCards();
+      if(!state.profile.role) { state.profile.role = "Sınıf Öğretmeni · IB PYP"; $("inRole").value=state.profile.role; }
+    } else if(p==="Doktor"){
+      state.seo.keywords = ["patient safety","clinical communication","evidence-based practice","teamwork","quality improvement"];
+      $("inKeywords").value = state.seo.keywords.join("\n");
+      aiAllCards();
+    } else if(p==="Avukat"){
+      state.seo.keywords = ["legal research","case management","client communication","contract drafting","litigation support"];
+      $("inKeywords").value = state.seo.keywords.join("\n");
+      aiAllCards();
+    } else {
+      aiSuggestKeywords(); aiAllCards();
+    }
+    renderAll(); scheduleSave();
+    $("startHint").textContent = "Akıllı kurulum tamamlandı. İstersen AI Stüdyo → Otopilot ile tümünü tamamla.";
+    toast("Akıllı kurulum");
+  });
+  $("btnSmartSeo").addEventListener("click", ()=>{ aiSuggestKeywords(); renderChips(); scheduleSave(); });
+  $("btnSmartCert").addEventListener("click", ()=>{
+    if(state.profession==="Öğretmen"){
+      appendFeedback(`[${new Date().toLocaleString()}] 🎓 Öneri: PYP Category 1–2–3, IBEC, Safeguarding, First Aid, Google Educator.`);
+      toast("Sertifika önerildi");
+    } else {
+      appendFeedback(`[${new Date().toLocaleString()}] 🎓 Öneri: Mesleğine göre temel sertifikaları ekle (kalite, güvenlik, iletişim).`);
+      toast("Sertifika önerildi");
+    }
+  });
+
+  // Profile inputs
+  ["inName","inRole","inHighlight"].forEach(id=>{
+    $(id).addEventListener("input", ()=>{
+      state.profile.name = $("inName").value;
+      state.profile.role = $("inRole").value;
+      state.profile.highlight = $("inHighlight").value;
+      scheduleSave(); renderAll();
+    });
+  });
+  $("aiHighlightBtn").addEventListener("click", ()=>{ aiFillHighlight(); scheduleSave(); renderAll(); });
+  $("btnClearPhoto").addEventListener("click", ()=>{
+    state.profile.photoData=""; $("inPhoto").value=""; scheduleSave(); renderAll(); toast("Fotoğraf temizlendi");
+  });
+  $("inPhoto").addEventListener("change", (e)=>{
+    const f=e.target.files && e.target.files[0]; if(!f) return;
+    const r=new FileReader();
+    r.onload=()=>{ state.profile.photoData=r.result; scheduleSave(); renderAll(); toast("Fotoğraf yüklendi"); };
+    r.readAsDataURL(f);
+  });
+
+  // Contact inputs
+  $("inEmail").addEventListener("input", ()=>{ state.contact.email=$("inEmail").value; scheduleSave(); renderAll(); });
+  $("inLink").addEventListener("input", ()=>{ state.contact.link=$("inLink").value; scheduleSave(); renderAll(); });
+
+  $("countrySelect").addEventListener("change", ()=>{
+    state.contact.country = $("countrySelect").value;
+    phoneMaxForCountry(state.contact.country);
+    // reformat current number safely
+    state.contact.phone = formatPhone(state.contact.country, $("inPhone").value);
+    $("inPhone").value = state.contact.phone;
+    scheduleSave(); renderAll();
+  });
+  // phone: avoid "+90+90" by always formatting from digits
+  const phoneHandler = ()=>{
+    const code = state.contact.country;
+    const formatted = formatPhone(code, $("inPhone").value);
+    state.contact.phone = formatted;
+    $("inPhone").value = formatted;
+    scheduleSave(); renderAll();
+  };
+  $("inPhone").addEventListener("blur", phoneHandler);
+  $("inPhone").addEventListener("input", ()=>{
+    // do not aggressively format on each keystroke for non-TR; but TR needs helpful formatting.
+    if(state.contact.country==="TR") phoneHandler();
+    else { state.contact.phone = $("inPhone").value; scheduleSave(); renderAll(); }
+  });
+
+  $("citySelect").addEventListener("change", ()=>{ state.contact.city=$("citySelect").value; scheduleSave(); renderAll(); });
+  $("inDistrict").addEventListener("input", ()=>{ state.contact.district=$("inDistrict").value; scheduleSave(); renderAll(); });
+
+  $("inQrUrl").addEventListener("input", ()=>{ state.contact.qrUrl=$("inQrUrl").value; scheduleSave(); });
+  $("inQrLabel").addEventListener("input", ()=>{ state.contact.qrLabel=$("inQrLabel").value; scheduleSave(); renderAll(); });
+
+  $("btnGenQr").addEventListener("click", async ()=>{
+    const url=$("inQrUrl").value.trim();
+    if(!url){ toast("Önce URL gir"); return; }
+    state.contact.qrUrl=url;
+    state.contact.qrImg="";
+    state.contact.qrData = await generateQrDataUrl(url);
+    scheduleSave(); renderAll();
+    toast("QR oluşturuldu");
+  });
+  $("btnClearQr").addEventListener("click", ()=>{
+    state.contact.qrImg=""; state.contact.qrData=""; $("inQrImg").value="";
+    scheduleSave(); renderAll(); toast("QR temizlendi");
+  });
+  $("inQrImg").addEventListener("change", (e)=>{
+    const f=e.target.files && e.target.files[0]; if(!f) return;
+    const r=new FileReader();
+    r.onload=()=>{ state.contact.qrImg=r.result; state.contact.qrData=""; scheduleSave(); renderAll(); toast("QR görsel yüklendi"); };
+    r.readAsDataURL(f);
+  });
+
+  $("btnSetNow").addEventListener("click", ()=>{
+    state.contact.lastUpdate = nowMMYYYY();
+    $("inLastUpdate").value = state.contact.lastUpdate;
+    scheduleSave(); renderAll();
+  });
+  $("inLastUpdate").addEventListener("input", ()=>{ state.contact.lastUpdate=$("inLastUpdate").value; scheduleSave(); renderAll(); });
+  $("inDeclaration").addEventListener("input", ()=>{ state.contact.declaration=$("inDeclaration").value; scheduleSave(); renderAll(); });
+
+  // SEO
+  ["fwPYP","fwUbD","fwSEL","fwSTEM","fwMEB"].forEach(id=>{
+    $(id).addEventListener("change", ()=>{
+      state.seo.frameworks = {
+        pyp:$("fwPYP").checked,
+        ubd:$("fwUbD").checked,
+        sel:$("fwSEL").checked,
+        stem:$("fwSTEM").checked,
+        meb:$("fwMEB").checked
+      };
+      scheduleSave();
+    });
+  });
+  $("aiKeywordsBtn").addEventListener("click", ()=>{ aiSuggestKeywords(); renderAll(); scheduleSave(); });
+  $("btnApplyKeywords").addEventListener("click", ()=>{
+    state.seo.keywords = lines($("inKeywords").value);
+    scheduleSave(); renderAll(); toast("Uygulandı");
+  });
+  $("inKeywords").addEventListener("input", ()=>{ state.seo.keywords = lines($("inKeywords").value); scheduleSave(); renderAll(); });
+
+  // Cards
+  function bindCard(k, showId, titleId, linesId, aiId){
+    $(showId).addEventListener("change", ()=>{
+      state.cards[k].show = $(showId).checked; scheduleSave(); renderAll();
+    });
+    $(titleId).addEventListener("input", ()=>{
+      state.cards[k].title = $(titleId).value; scheduleSave(); renderAll();
+    });
+    $(linesId).addEventListener("input", ()=>{
+      state.cards[k].lines = lines($(linesId).value); scheduleSave(); renderAll();
+    });
+    $(aiId).addEventListener("click", ()=>{
+      aiCardFill(k); 
+      $(linesId).value = state.cards[k].lines.join("\n");
+      scheduleSave(); renderAll();
+    });
+  }
+  bindCard("c1","c1Show","c1Title","c1Lines","aiCard1");
+  bindCard("c2","c2Show","c2Title","c2Lines","aiCard2");
+  bindCard("c3","c3Show","c3Title","c3Lines","aiCard3");
+  bindCard("c4","c4Show","c4Title","c4Lines","aiCard4");
+  $("aiAllCards").addEventListener("click", ()=>{
+    aiAllCards();
+    $("c1Lines").value = state.cards.c1.lines.join("\n");
+    $("c2Lines").value = state.cards.c2.lines.join("\n");
+    $("c3Lines").value = state.cards.c3.lines.join("\n");
+    $("c4Lines").value = state.cards.c4.lines.join("\n");
+    scheduleSave(); renderAll();
+  });
+
+  // EDU/EXP/REF add
+  $("btnAddEdu").addEventListener("click", ()=>{
+    state.edu.push({degree:"",program:"",school:"",location:"",dates:"",notes:""});
+    rebuildEduUI(); scheduleSave(); renderAll();
+  });
+  $("aiEduAll").addEventListener("click", ()=>{
+    state.edu.forEach((e,i)=>{ if(!e.notes) e.notes = `${e.program||"Program"} odaklı temel yetkinlikleri güçlendirdim.`; });
+    rebuildEduUI(); scheduleSave(); renderAll(); aiLog("Tüm eğitim kartlarına AI dokunuş yapıldı.");
+  });
+
+  $("btnAddExp").addEventListener("click", ()=>{
+    state.exp.push({org:"",role:"",location:"",dates:"",tags:[],bullets:[]});
+    rebuildExpUI(); scheduleSave(); renderAll();
+  });
+  $("aiExpAll").addEventListener("click", ()=>{
+    state.exp.forEach((e,i)=>{
+      if(!e.bullets || !e.bullets.length){
+        e.bullets = ["Süreçleri planladım ve takip ettim.","Ekip iletişimini güçlendirdim.","Sonuç odaklı iyileştirmeler yaptım."];
+      }
+    });
+    rebuildExpUI(); scheduleSave(); renderAll(); aiLog("Tüm deneyim kartlarına AI bullet önerildi.");
+  });
+
+  $("btnAddRef").addEventListener("click", ()=>{
+    state.refs.push({name:"",role:"",relation:"",period:"",focus:""});
+    rebuildRefUI(); scheduleSave(); renderAll();
+  });
+  $("aiRefAll").addEventListener("click", ()=>{
+    state.refs.forEach(r=>{ if(!r.focus) r.focus="İletişim, iş disiplini ve sonuç üretme kapasitem hakkında referans verebilir."; });
+    rebuildRefUI(); scheduleSave(); renderAll(); aiLog("Tüm referanslara AI odak metni eklendi.");
+  });
+
+  // CERT add
+  $("btnAddCert").addEventListener("click", ()=>{
+    state.certs.push({title:"",issuer:"",year:"",link:""});
+    rebuildCertUI(); scheduleSave(); renderAll();
+  });
+  $("btnAddCertFromLib").addEventListener("click", ()=>{
+    const idx = parseInt($("certLibrary").value,10);
+    const c = IB_PYP_CERTS[idx];
+    if(!c) return;
+    state.certs.push({title:c[0], issuer:c[1], year:"", link:""});
+    rebuildCertUI(); scheduleSave(); renderAll(); toast("Sertifika eklendi");
+  });
+  $("btnSuggestCert").addEventListener("click", ()=>{
+    if(state.profession==="Öğretmen"){
+      // auto-add common missing ones (max 3)
+      const has = new Set(state.certs.map(x=>x.title));
+      const picks = ["PYP Category 1 (Making the PYP Happen)","PYP Category 2 (Specialist / Classroom)","Safeguarding / Child Protection Training"];
+      let added=0;
+      picks.forEach(t=>{
+        const match = IB_PYP_CERTS.find(x=>x[0]===t);
+        if(match && !has.has(t) && added<3){
+          state.certs.push({title:match[0], issuer:match[1], year:"", link:""});
+          added++;
+        }
+      });
+      rebuildCertUI(); scheduleSave(); renderAll();
+      aiLog("Sertifika önerileri eklendi.");
+      toast("Öneriler eklendi");
+    } else {
+      toast("Bu meslek için kütüphaneyi genişletebiliriz.");
+    }
+  });
+
+  // Essay
+  $("essayType").addEventListener("change", ()=>{ state.essay.type=$("essayType").value; scheduleSave(); renderAll(); });
+  $("essayTitle").addEventListener("input", ()=>{ state.essay.title=$("essayTitle").value; scheduleSave(); renderAll(); });
+  $("essayTarget").addEventListener("input", ()=>{ state.essay.target=$("essayTarget").value; scheduleSave(); renderAll(); });
+  $("essayText").addEventListener("input", ()=>{ state.essay.text=$("essayText").value; scheduleSave(); renderAll(); });
+  $("aiEssayBtn").addEventListener("click", ()=>{ aiEssay(); scheduleSave(); renderAll(); });
+  $("btnClearEssay").addEventListener("click", ()=>{ state.essay.text=""; $("essayText").value=""; scheduleSave(); renderAll(); });
+
+  // AI studio
+  $("aiGuide").addEventListener("input", ()=>{ state.ai.guide=$("aiGuide").value; scheduleSave(); });
+  $("aiRunAll").addEventListener("click", ()=>{ runAutopilot(); });
+  $("aiCvComment").addEventListener("click", ()=>{ aiCvComment(); });
+
+  // Autopilot button
+  $("btnAutoPilot").addEventListener("click", ()=>{ runAutopilot(); });
+
+  // Feedback
+  $("btnScan").addEventListener("click", ()=>{
+    const issues = scanIssues();
+    appendFeedback(`[${new Date().toLocaleString()}] 🔍 Tarama sonucu: ${issues.length?issues.length+" bulgu":"bulgu yok"}`);
+    issues.forEach(i=>appendFeedback(" - "+i));
+    toast("Tarama tamamlandı");
+  });
+  $("btnFixHints").addEventListener("click", ()=>smartFixHints());
+  $("btnClearLogs").addEventListener("click", ()=>{
+    state.feedback.log=""; $("fbLog").value=""; localStorage.removeItem(LOG_KEY);
+    toast("Log temizlendi"); scheduleSave();
+  });
+  $("btnSaveFeedback").addEventListener("click", ()=>{
+    const txt=$("fbText").value.trim();
+    if(!txt){ toast("Bir şey yaz"); return; }
+    appendFeedback(`[${new Date().toLocaleString()}] 📝 ${txt}`);
+    $("fbText").value="";
+    toast("Kaydedildi");
+  });
+  $("btnAiFeedback").addEventListener("click", ()=>{
+    const txt=$("fbText").value.trim();
+    if(!txt){ toast("Bir şey yaz"); return; }
+    const refined = `Sorun: ${txt}\nBeklenen: (kısa)\nOlan: (kısa)\nTekrar adımı: 1) ... 2) ...\nTarayıcı/cihaz: ...`;
+    $("fbText").value = refined;
+    toast("AI netleştirdi (taslak)");
+  });
+
+  // Import/export
+  $("btnExportJson").addEventListener("click", exportJson);
+  $("btnImportJson").addEventListener("click", importJsonFile);
+}
+
+/* ========= init ========= */
+function init(){
+  // build selects
+  $("professionSelect").innerHTML = PROFESSIONS.map(p=>`<option value="${p}">${p}</option>`).join("");
+  buildCountry(); buildCity(); buildCertLibrary();
+
+  loadState();
+  loadFeedback();
+
+  // apply saved theme/device
+  const theme = localStorage.getItem("AKILLI_THEME") || "system";
+  applyTheme(theme);
+  setSegActive(["tSystem","tLight","tDark"], theme==="light"?"tLight": theme==="dark"?"tDark":"tSystem");
+  const dev = localStorage.getItem("AKILLI_DEVICE") || "desktop";
+  applyDevice(dev);
+  setSegActive(["dDesk","dMob"], dev==="mobile"?"dMob":"dDesk");
+
+  hydrateUI();
+  rebuildSpecialties();
+  rebuildAllLists();
+  renderAll();
+  wire();
+
+  // ensure panel closed on load on mobile, open on desktop
+  if(window.matchMedia("(min-width: 1100px)").matches){
+    openPanel(false); // desktop uses static drawer; button still works
+  } else {
+    openPanel(false);
+  }
+}
+document.addEventListener("DOMContentLoaded", init);
+</script>
+
+<script>
+(() => {
+  "use strict";
+
+  const LS_PATCHES = "AKILLI_CV_PATCHES_V1";
+  const LS_TRASH   = "AKILLI_CV_TRASH_V1";
+  const LS_VIS     = "AKILLI_CV_SECTION_VIS_V1";
+  const LS_LOG     = "AKILLI_CV_PATCH_LOG_V1";
+
+  const $ = (sel, root=document) => root.querySelector(sel);
+  const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+
+  const escapeHtml = (s) => String(s ?? "")
+    .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;").replaceAll("'","&#039;");
+
+  const nowStr = () => {
+    const d = new Date();
+    const pad = (n)=> String(n).padStart(2,"0");
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  };
+
+  const safeJsonParse = (s, fallback) => { try { return JSON.parse(s ?? ""); } catch { return fallback; } };
+
+  const getPatches = () => safeJsonParse(localStorage.getItem(LS_PATCHES), []);
+  const setPatches = (arr) => localStorage.setItem(LS_PATCHES, JSON.stringify(arr));
+
+  const getTrash = () => safeJsonParse(localStorage.getItem(LS_TRASH), { patches: [] });
+  const setTrash = (obj) => localStorage.setItem(LS_TRASH, JSON.stringify(obj));
+
+  const getVis = () => safeJsonParse(localStorage.getItem(LS_VIS), {});
+  const setVis = (obj) => localStorage.setItem(LS_VIS, JSON.stringify(obj));
+
+  const getLog = () => safeJsonParse(localStorage.getItem(LS_LOG), []);
+  const setLog = (arr) => localStorage.setItem(LS_LOG, JSON.stringify(arr));
+
+  const pushLog = (kind, msg) => {
+    const arr = getLog();
+    arr.push({ t: nowStr(), kind, msg });
+    while (arr.length > 250) arr.shift();
+    setLog(arr);
+    renderLog();
+  };
+
+  const renderLog = () => {
+    const box = $("#pm_log");
+    if (!box) return;
+    const arr = getLog();
+    box.innerHTML = arr.map(e => `<div>[${e.t}] <b>${escapeHtml(e.kind)}</b> · ${escapeHtml(e.msg)}</div>`).join("");
+    box.scrollTop = box.scrollHeight;
+  };
+
+  const uid = () => "p_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+
+  // ---- CV Section registry (secXTitle + cvX)
+  function buildCvSectionRegistry() {
+    const out = [];
+    const titles = $$('[id^="sec"][id$="Title"]');
+    titles.forEach(t => {
+      const id = t.id;
+      const key = id.replace(/^sec/, "").replace(/Title$/, "");
+      const body = $("#cv" + key);
+      out.push({ key, title: (t.textContent || key).trim(), titleElId: id, bodyElId: body ? body.id : null });
+    });
+    return out;
+  }
+
+  function applyVisibility() {
+    const vis = getVis();
+    const reg = buildCvSectionRegistry();
+    reg.forEach(r => {
+      const on = vis[r.key] !== false; // default true
+      const tEl = $("#" + r.titleElId);
+      const bEl = r.bodyElId ? $("#" + r.bodyElId) : null;
+      if (tEl) tEl.style.display = on ? "" : "none";
+      if (bEl) bEl.style.display = on ? "" : "none";
+    });
+  }
+
+  function renderVisibilityList() {
+    const wrap = $("#pm_sectionsList");
+    if (!wrap) return;
+    const reg = buildCvSectionRegistry();
+    const vis = getVis();
+
+    wrap.innerHTML = reg.map(r => {
+      const checked = vis[r.key] === false ? "" : "checked";
+      return `
+        <div class="item">
+          <div class="top">
+            <div>
+              <b>${escapeHtml(r.title || r.key)}</b>
+              <span class="pill">${escapeHtml(r.key)}</span>
+            </div>
+            <label style="display:flex;gap:8px;align-items:center">
+              <input type="checkbox" data-vis="${escapeHtml(r.key)}" ${checked}/>
+              <span class="muted">CV’de göster</span>
+            </label>
+          </div>
+        </div>`;
+    }).join("");
+
+    $$('input[data-vis]', wrap).forEach(cb => {
+      cb.addEventListener('change', () => {
+        const key = cb.getAttribute('data-vis');
+        const v = getVis();
+        v[key] = cb.checked;
+        setVis(v);
+        applyVisibility();
+      });
+    });
+  }
+
+  // ---- Parent options: existing tabs
+  function getPanelParentOptions() {
+    const tabs = $$('.tab[data-tab]');
+    return tabs.map(btn => ({ id: btn.getAttribute('data-tab'), name: (btn.textContent || "").trim() }))
+      .filter(x => x.id && x.id !== "tabManage");
+  }
+
+  function renderParents() {
+    const sel = $("#pm_parent");
+    if (!sel) return;
+    const opts = getPanelParentOptions();
+    sel.innerHTML = opts.map(o => `<option value="${escapeHtml(o.id)}">${escapeHtml(o.name || o.id)}</option>`).join("");
+  }
+
+  function syncTypeUI() {
+    const type = $("#pm_patchType")?.value || "main";
+    const pw = $("#pm_parentWrap");
+    const nw = $("#pm_newHeadWrap");
+    if (pw) pw.style.display = (type === "sub") ? "" : "none";
+    if (nw) nw.style.display = (type === "main") ? "" : "none";
+  }
+
+  // ---- Patch apply engine (safe)
+  function ensurePatchContainer(id, where) {
+    const containerId = where === "cv" ? "pm_cv_patches" : "pm_panel_patches";
+    let host = $("#" + containerId);
+    if (!host) {
+      if (where === "panel") {
+        const manage = $("#tabManage");
+        host = document.createElement("div");
+        host.id = containerId;
+        host.style.marginTop = "10px";
+        const title = document.createElement("div");
+        title.className = "card";
+        title.innerHTML = `<div class="card-title">🔩 Patch Çıktıları (Panel)</div><div class="muted">Panel hedefli patch çıktılarını burada görürsün.</div>`;
+        manage?.appendChild(title);
+        manage?.appendChild(host);
+      } else {
+        const paper = $("#paper") || document.body;
+        host = document.createElement("div");
+        host.id = containerId;
+        host.style.marginTop = "14px";
+        paper.appendChild(host);
+      }
+    }
+    let slot = $("#" + id);
+    if (!slot) {
+      slot = document.createElement("div");
+      slot.id = id;
+      slot.className = "pm-patch-slot";
+      host.appendChild(slot);
+    }
+    return slot;
+  }
+
+  function applyPatch(patch, mode="apply") {
+    const target = patch.target || "both";
+    const htmlCode = patch.html || "";
+    const jsCode = patch.js || "";
+
+    const renderInto = (where) => {
+      const slotId = (mode === "test") ? "pm_test_slot" : ("pm_slot_" + patch.id + "_" + where);
+      const slot = ensurePatchContainer(slotId, where);
+      if (htmlCode && htmlCode.trim()) slot.innerHTML = htmlCode;
+      else if (mode === "test") slot.innerHTML = `<div class="muted">HTML yok · yalnızca JS test edildi.</div>`;
+    };
+
+    if (target === "panel" || target === "both") renderInto("panel");
+    if (target === "cv" || target === "both") renderInto("cv");
+
+    if (jsCode && jsCode.trim()) {
+      try {
+        const api = {
+          $: (s, r=document)=> r.querySelector(s),
+          $$: (s, r=document)=> Array.from(r.querySelectorAll(s)),
+          patch,
+          log: (m)=> pushLog("PATCH", `[${patch.title}] ${m}`)
+        };
+        new Function("api", jsCode)(api);
+      } catch (e) {
+        pushLog("ERROR", `[${patch.title}] JS hata: ${e?.message || e}`);
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function clearAppliedPatch(patch) {
+    ["panel","cv"].forEach(where => {
+      const id = "pm_slot_" + patch.id + "_" + where;
+      const el = document.getElementById(id);
+      if (el) el.remove();
+    });
+  }
+
+  function applyAllEnabledPatches() {
+    const patches = getPatches();
+    let changed = false;
+    patches.filter(p => p.enabled).forEach(p => {
+      const ok = applyPatch(p, "apply");
+      if (!ok) {
+        p.enabled = false;
+        changed = true;
+        pushLog("WARN", `[${p.title}] Hata nedeniyle otomatik kapatıldı.`);
+      }
+    });
+    if (changed) setPatches(patches);
+    renderPatches();
+  }
+
+  function getParentLabel(parentId) {
+    const opt = getPanelParentOptions().find(o => o.id === parentId);
+    return opt?.name || parentId || "-";
+  }
+
+  // ---- UI render: patches
+  function renderPatches() {
+    const wrap = $("#pm_patches");
+    if (!wrap) return;
+    const patches = getPatches();
+    if (patches.length === 0) {
+      wrap.innerHTML = `<div class="item"><div class="muted">Henüz patch eklenmedi.</div></div>`;
+      return;
+    }
+
+    wrap.innerHTML = patches.map(p => {
+      const status = p.enabled ? "Aktif" : "Pasif";
+      const type = p.type === "main" ? "Ana" : "Alt";
+      const parent = p.type === "sub" ? (p.parentLabel || p.parent || "-") : (p.newHead || "-");
+      const tgt = p.target || "both";
+      return `
+        <div class="item" data-pid="${escapeHtml(p.id)}">
+          <div class="top">
+            <div>
+              <b>${escapeHtml(p.title)}</b>
+              <span class="pill">${escapeHtml(type)}</span>
+              <span class="pill">${escapeHtml(status)}</span>
+              <span class="pill">${escapeHtml(tgt)}</span>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn ghost" data-act="toggle">${p.enabled ? "Kapat" : "Aç"}</button>
+              <button class="btn ghost" data-act="edit">Düzenle</button>
+              <button class="btn ghost" data-act="delete">Sil</button>
+            </div>
+          </div>
+          <div class="muted" style="margin-top:6px">
+            Bağlantı: <b>${escapeHtml(parent)}</b> · Oluşturma: ${escapeHtml(p.createdAt || "-")}
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    wrap.querySelectorAll("[data-act]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const item = btn.closest("[data-pid]");
+        const pid = item?.getAttribute("data-pid");
+        const patches = getPatches();
+        const p = patches.find(x => x.id === pid);
+        if (!p) return;
+
+        const act = btn.getAttribute("data-act");
+        if (act === "toggle") {
+          p.enabled = !p.enabled;
+          setPatches(patches);
+          clearAppliedPatch(p);
+          if (p.enabled) applyPatch(p, "apply");
+          pushLog("PATCH", `[${p.title}] ${p.enabled ? "Aktif" : "Pasif"} yapıldı.`);
+          renderPatches();
+          return;
+        }
+        if (act === "edit") {
+          $("#pm_patchTitle").value = p.title || "";
+          $("#pm_patchType").value = p.type || "main";
+          syncTypeUI();
+          $("#pm_parent").value = p.parent || $("#pm_parent").value;
+          $("#pm_newHead").value = p.newHead || "";
+          $("#pm_target").value = p.target || "both";
+          $("#pm_html").value = p.html || "";
+          $("#pm_js").value = p.js || "";
+          $("#pm_addEnable").setAttribute("data-editing", pid);
+          $("#pm_save").setAttribute("data-editing", pid);
+          pushLog("UI", `Düzenleme yüklendi: ${p.title}`);
+          return;
+        }
+        if (act === "delete") {
+          const trash = getTrash();
+          trash.patches = trash.patches || [];
+          trash.patches.unshift({ ...p, deletedAt: nowStr() });
+          setTrash(trash);
+
+          setPatches(patches.filter(x => x.id !== pid));
+          clearAppliedPatch(p);
+          pushLog("PATCH", `Silindi: ${p.title}`);
+          renderPatches();
+          renderTrash();
+        }
+      });
+    });
+  }
+
+  function renderTrash() {
+    const wrap = $("#pm_trash");
+    if (!wrap) return;
+    const trash = getTrash();
+    const patches = (trash.patches || []);
+
+    const hasLegacyTrash = !!(window.trash && Array.isArray(window.trash)) || !!(window.trashItems && Array.isArray(window.trashItems));
+    const legacyHint = hasLegacyTrash
+      ? `<div class="item"><div class="top"><b>Platform içi silinenler</b><span class="pill">Algılandı</span></div>
+           <div class="muted">Bu sürümde ayrıca platformun kendi “silinenler” modülü de bulunabilir.</div>
+         </div>` : "";
+
+    if (patches.length === 0 && !hasLegacyTrash) {
+      wrap.innerHTML = `<div class="item"><div class="muted">Silinen bir şey yok.</div></div>`;
+      return;
+    }
+
+    const patchItems = patches.map(p => `
+      <div class="item">
+        <div class="top">
+          <div>
+            <b>${escapeHtml(p.title || "İsimsiz Patch")}</b>
+            <span class="pill">Patch</span>
+            <span class="pill">Silinme: ${escapeHtml(p.deletedAt || "-")}</span>
+          </div>
+          <button class="btn ghost" data-restore="${escapeHtml(p.id)}">Geri Al</button>
+        </div>
+        <div class="muted" style="margin-top:6px">${escapeHtml(p.type === "sub" ? (p.parentLabel || p.parent || "-") : (p.newHead || "-"))}</div>
+      </div>
+    `).join("");
+
+    wrap.innerHTML = legacyHint + patchItems;
+
+    $$("button[data-restore]", wrap).forEach(b => {
+      b.addEventListener("click", () => {
+        const id = b.getAttribute("data-restore");
+        const trash = getTrash();
+        const idx = (trash.patches || []).findIndex(x => x.id === id);
+        if (idx < 0) return;
+
+        const p = trash.patches.splice(idx, 1)[0];
+        setTrash(trash);
+
+        const patches = getPatches();
+        patches.unshift({ ...p, enabled: true });
+        setPatches(patches);
+
+        pushLog("PATCH", `Geri alındı: ${p.title}`);
+        renderPatches();
+        renderTrash();
+        applyAllEnabledPatches();
+      });
+    });
+  }
+
+  function upsertPatch(enableAfter) {
+    const patches = getPatches();
+    const editingId = $("#pm_addEnable")?.getAttribute("data-editing") || $("#pm_save")?.getAttribute("data-editing");
+
+    const type = $("#pm_patchType")?.value || "main";
+    const parent = ($("#pm_parent")?.value || "").trim();
+    const newHead = ($("#pm_newHead")?.value || "").trim();
+
+    const p = {
+      id: editingId || uid(),
+      title: ($("#pm_patchTitle")?.value || "").trim() || "İsimsiz Patch",
+      type,
+      parent: type === "sub" ? parent : "",
+      parentLabel: type === "sub" ? getParentLabel(parent) : "",
+      newHead: type === "main" ? (newHead || ($("#pm_patchTitle")?.value || "").trim()) : "",
+      target: $("#pm_target")?.value || "both",
+      html: $("#pm_html")?.value || "",
+      js: $("#pm_js")?.value || "",
+      enabled: !!enableAfter,
+      createdAt: nowStr(),
+    };
+
+    if (type === "sub" && !p.parent) {
+      pushLog("WARN", "Alt modül için bir sekme/başlık seçmelisin.");
+      return;
+    }
+
+    const i = patches.findIndex(x => x.id === p.id);
+    if (i >= 0) {
+      p.createdAt = patches[i].createdAt || p.createdAt;
+      patches[i] = { ...patches[i], ...p };
+    } else {
+      patches.unshift(p);
+    }
+    setPatches(patches);
+
+    $("#pm_addEnable")?.removeAttribute("data-editing");
+    $("#pm_save")?.removeAttribute("data-editing");
+
+    clearAppliedPatch(p);
+    if (p.enabled) {
+      const ok = applyPatch(p, "apply");
+      if (!ok) {
+        p.enabled = false;
+        setPatches(patches.map(x => x.id === p.id ? p : x));
+      }
+    }
+
+    pushLog("PATCH", `${i>=0 ? "Güncellendi" : "Eklendi"}: ${p.title}`);
+    renderPatches();
+    renderTrash();
+  }
+
+  function testPatchOnce() {
+    const temp = {
+      id: "TEST",
+      title: ($("#pm_patchTitle")?.value || "Test Patch").trim(),
+      target: $("#pm_target")?.value || "both",
+      html: $("#pm_html")?.value || "",
+      js: $("#pm_js")?.value || ""
+    };
+    const slot = $("#pm_test_slot");
+    if (slot) slot.remove();
+    const ok = applyPatch(temp, "test");
+    pushLog(ok ? "PATCH" : "ERROR", `Test çalıştırıldı: ${temp.title}`);
+  }
+
+  function wireUI() {
+    renderParents();
+    syncTypeUI();
+    renderVisibilityList();
+    renderTrash();
+    renderPatches();
+    renderLog();
+
+    $("#pm_patchType")?.addEventListener("change", syncTypeUI);
+    $("#pm_addEnable")?.addEventListener("click", () => upsertPatch(true));
+    $("#pm_save")?.addEventListener("click", () => upsertPatch(false));
+    $("#pm_test")?.addEventListener("click", testPatchOnce);
+
+    $("#pm_clearLog")?.addEventListener("click", () => {
+      setLog([]);
+      renderLog();
+    });
+
+    // visibility toggles
+    $("#pm_sectionsList")?.addEventListener("change", (ev) => {
+      const t = ev.target;
+      if (!(t instanceof HTMLInputElement)) return;
+      const key = t.getAttribute("data-vis");
+      if (!key) return;
+      const v = getVis();
+      v[key] = t.checked;
+      setVis(v);
+      applyVisibility();
+    });
+  }
+
+  function init() {
+    try {
+      applyVisibility();
+      wireUI();
+      applyAllEnabledPatches();
+      pushLog("INIT", "Patch Merkezi hazır.");
+    } catch (e) {
+      console.error(e);
+      pushLog("ERROR", "Patch Merkezi başlatma hatası: " + (e?.message || e));
+    }
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+
+</body>
+</html>
